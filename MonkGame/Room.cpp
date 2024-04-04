@@ -11,7 +11,10 @@ Room::Room() {
 Room::~Room() {}
 
 void Room::addConnectedRoom(Room* room) {
-	connectedRooms.push_back(room);
+	if (room != nullptr) {
+		connectedRooms.push_back(room);
+	}
+	
 }
 const vector<Room*>& Room::getConnectedRooms() const {
 	return connectedRooms;

@@ -18,42 +18,60 @@ void Dungeon::generate() {
 	// Generate the dungeon with the treasure room towards the end of the dungeon (at a dead end would be best). 
 
 	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new EmptyRoom());
-	rooms.push_back(new MonsterRoom(make_unique<Goblin>()));
-	rooms.push_back(new MonsterRoom(make_unique<Zombie>()));
-	rooms.push_back(new MonsterRoom(make_unique<GiantSpider>()));
-	rooms.push_back(new MonsterRoom(make_unique<GiantSpider>()));
-	
+	Room* lastRoom = rooms[0];
+
 	// Randomly choose a room to connect
 	srand(time(NULL));
 	// Connect rooms
-	for (int i = 0; i < rooms.size() -1; ++i) {
+	for (int i = 0; i <= 8; ++i) {
+		Room* newRoom = nullptr;
 		
-		int connectIndex = rand() % rooms.size() - 1;
-		
-		// Ensure the room is not already connected and is not the same room
-		while (connectIndex == i || find(rooms[i]->getConnectedRooms().begin(), rooms[i]->getConnectedRooms().end(), rooms[connectIndex]) != rooms[i]->getConnectedRooms().end()
-		|| (abs(int(connectIndex % 3 - i % 3))) == 1 && abs(int(connectIndex / 3 - i / 3)) == 1){
-			connectIndex = rand() % rooms.size();
+		int roomType = rand() % 4;
+		switch (roomType) {
+			case 0:
+			case 1:
+			case 2:
+				newRoom = new EmptyRoom();
+				break;
+			case 3:
+				int monsterType = rand() % 4;
+				switch (monsterType) {
+					case 0:
+						newRoom = new MonsterRoom(make_unique<Goblin>());
+						break;
+					case 1:
+						newRoom = new MonsterRoom(make_unique<Zombie>());
+						break;
+					case 2:
+						newRoom = new MonsterRoom(make_unique<Skeleton>());
+						break;
+					case 3: 
+						newRoom = new MonsterRoom(make_unique<GiantSpider>());
+						break;
+				}
+				break;	
 		}
-		// Connect the rooms bidirectionally
-		rooms[i]->addConnectedRoom(rooms[connectIndex]);
-		rooms[connectIndex]->addConnectedRoom(rooms[i]);
+
+		Room* connectedRoom = nullptr;
+		for (Room* room : rooms) {
+			if (room->getConnectedRooms().size() < 3) {
+				connectedRoom = room;
+				break;
+			}
+		}
+		if (connectedRoom == nullptr) {
+			break;
+		}
+		
+		newRoom->addConnectedRoom(connectedRoom);
+		connectedRoom->addConnectedRoom(newRoom);
+		rooms.push_back(newRoom);
+		lastRoom = newRoom;
 	}
-	rooms.push_back(new TreasureRoom());
-	int treasureIndex = rooms.size() - 1;
-	int connectIndex = rand() % (rooms.size());
-	rooms[treasureIndex]->addConnectedRoom(rooms[connectIndex]);
-	rooms[connectIndex]->addConnectedRoom(rooms[treasureIndex]);
+	Room* tRoom = new TreasureRoom();
+	tRoom->addConnectedRoom(lastRoom);
+	lastRoom->addConnectedRoom(tRoom);
+	rooms.push_back(tRoom);
 
 }
 

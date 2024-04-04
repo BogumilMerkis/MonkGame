@@ -16,4 +16,3 @@ public:
 	Room* getStartingRoom() const;
 	vector<Room*>& getRooms();
 };
-
