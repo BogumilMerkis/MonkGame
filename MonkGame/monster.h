@@ -5,15 +5,15 @@ using namespace std;
 
 class Monster {
 protected:
-	
-
-public:
 	string name;
 	int hp;
 	int maxhp = hp;
 	int attack;
+public:
 	Monster(string _name, int _hp, int _attack);
 	virtual void attackAction() const = 0;
+	int getHp();
+	int getAttack();
 	void defend();
 	string getName() const;
 	virtual ~Monster();

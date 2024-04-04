@@ -4,7 +4,10 @@
 #include "Monster.h"
 using namespace std;
 
-Room::Room(int number) : roomNumber(number) {}
+int Room::currentRoomNumber = 0;
+Room::Room() {
+	roomNumber = ++currentRoomNumber;
+}
 Room::~Room() {}
 
 void Room::addConnectedRoom(Room* room) {
@@ -24,7 +27,7 @@ int Room::getRoomNumber() const
 }
 
 
-EmptyRoom::EmptyRoom(int number) : Room(number) {}
+EmptyRoom::EmptyRoom() : Room() {}
 
 
 void EmptyRoom::describe() const {
@@ -35,7 +38,7 @@ void EmptyRoom::interact(Dungeon& dungeon) {
 	// logic for healing hp
 }
 
-MonsterRoom::MonsterRoom(int number, unique_ptr<Monster> _monster) : Room(number), monster(move(_monster)) {}
+MonsterRoom::MonsterRoom(unique_ptr<Monster> _monster) : Room(), monster(move(_monster)) {}
 
 void MonsterRoom::describe() const {
 	cout << "This room contains a  " << monster->getName() << endl;
@@ -45,7 +48,7 @@ void MonsterRoom::interact(Dungeon& dungeon) {
 	cout << "You encounter a " << monster-> getName() << endl;
 }
 
-TreasureRoom::TreasureRoom(int number) : Room(number) {}
+TreasureRoom::TreasureRoom() : Room() {}
 
 void TreasureRoom::describe() const {
 	cout << "A large, open treasure room filled with gold and jewels.";

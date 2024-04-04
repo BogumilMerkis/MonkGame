@@ -93,12 +93,12 @@ int main(int, char**)
     unique_ptr<Monster> monster;
     fac = make_unique < GoblinFactory>();
     monster = fac->createMonster();
-    cout << "Goblin HP: " << monster->hp << ", Attack: " << monster->attack << endl;
+    cout << "Goblin HP: " << monster->getHp() << ", Attack: " << monster->getAttack() << endl;
     monster->attackAction();
 
     fac = make_unique<ZombieFactory>();
     monster = fac->createMonster();
-    cout << "Goblin HP: " << monster->hp << ", Attack: " << monster->attack << endl;
+    cout << "Goblin HP: " << monster->getHp() << ", Attack: " << monster->getAttack() << endl;
     monster->attackAction();
 
     Dungeon d;
@@ -106,7 +106,7 @@ int main(int, char**)
     d.getStartingRoom();
     d.display();
     const vector<Room*>& dungeonRooms = d.getRooms();
-    for (int i = 0; i < 9; i++) { // USE SQUARE NUMBERS FOR DUNGEON SIZE.
+    for (int i = 0; i < d.getRooms().size(); i++) { // USE SQUARE NUMBERS FOR DUNGEON SIZE.
         dungeonRooms[i]->describe(); // This will be tied to the game loop. 
 
     }

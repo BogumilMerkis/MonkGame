@@ -17,21 +17,28 @@ void Dungeon::generate() {
 	// Generate room objects and fill vector
 	// Generate the dungeon with the treasure room towards the end of the dungeon (at a dead end would be best). 
 
-	rooms.push_back(new EmptyRoom(1));
-	rooms.push_back(new EmptyRoom(2));
-	rooms.push_back(new EmptyRoom(3));
-	rooms.push_back(new EmptyRoom(4));
-	rooms.push_back(new EmptyRoom(5));
-	rooms.push_back(new MonsterRoom(6, make_unique<Goblin>()));
-	rooms.push_back(new MonsterRoom(7, make_unique<Zombie>()));
-	rooms.push_back(new MonsterRoom(8, make_unique<GiantSpider>()));
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new EmptyRoom());
+	rooms.push_back(new MonsterRoom(make_unique<Goblin>()));
+	rooms.push_back(new MonsterRoom(make_unique<Zombie>()));
+	rooms.push_back(new MonsterRoom(make_unique<GiantSpider>()));
+	rooms.push_back(new MonsterRoom(make_unique<GiantSpider>()));
 	
 	// Randomly choose a room to connect
 	srand(time(NULL));
 	// Connect rooms
-	for (int i = 0; i < rooms.size() - 1; ++i) {
+	for (int i = 0; i < rooms.size() -1; ++i) {
 		
-		int connectIndex = rand() % rooms.size();
+		int connectIndex = rand() % rooms.size() - 1;
 		
 		// Ensure the room is not already connected and is not the same room
 		while (connectIndex == i || find(rooms[i]->getConnectedRooms().begin(), rooms[i]->getConnectedRooms().end(), rooms[connectIndex]) != rooms[i]->getConnectedRooms().end()
@@ -42,9 +49,9 @@ void Dungeon::generate() {
 		rooms[i]->addConnectedRoom(rooms[connectIndex]);
 		rooms[connectIndex]->addConnectedRoom(rooms[i]);
 	}
-	rooms.push_back(new TreasureRoom(9));
+	rooms.push_back(new TreasureRoom());
 	int treasureIndex = rooms.size() - 1;
-	int connectIndex = rand() % (rooms.size() - 1);
+	int connectIndex = rand() % (rooms.size());
 	rooms[treasureIndex]->addConnectedRoom(rooms[connectIndex]);
 	rooms[connectIndex]->addConnectedRoom(rooms[treasureIndex]);
 

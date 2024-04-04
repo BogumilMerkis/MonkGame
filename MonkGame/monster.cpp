@@ -9,6 +9,14 @@ Monster::Monster(string _name, int _hp, int _attack) : name(_name), hp(_hp), max
 void Monster::attackAction() const
 {
 }
+int Monster::getHp()
+{
+	return hp;
+}
+int Monster::getAttack()
+{
+	return attack;
+}
 void Monster::defend()
 {
 	if (hp < maxhp)

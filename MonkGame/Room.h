@@ -9,8 +9,9 @@ class Room {
 protected:
 	vector<Room*> connectedRooms;
 	int roomNumber;
+	static int currentRoomNumber;
 public:
-	Room(int number);
+	Room();
 	virtual ~Room();
 
 	void addConnectedRoom(Room* room);
@@ -26,7 +27,7 @@ public:
 
 class EmptyRoom : public Room {
 public:
-	EmptyRoom(int number);
+	EmptyRoom();
 
 	void describe() const override;
 	void interact(Dungeon& dungeon) override;
@@ -36,7 +37,7 @@ class MonsterRoom : public Room {
 private:
 	unique_ptr<Monster> monster;
 public:
-	MonsterRoom(int number, unique_ptr<Monster> _monster);
+	MonsterRoom(unique_ptr<Monster> _monster);
 
 	void describe() const override;
 	void interact(Dungeon& dungeon) override;
@@ -44,7 +45,7 @@ public:
 
 class TreasureRoom : public Room {
 public:
-	TreasureRoom(int number);
+	TreasureRoom();
 
 	void describe() const override;
 	void interact(Dungeon& dungeon) override;
