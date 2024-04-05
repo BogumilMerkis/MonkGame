@@ -5,30 +5,13 @@
 #pragma once
 using namespace std;
 
-Monster::Monster(string _name, int _hp, int _attack) : name(_name), hp(_hp), maxhp(_hp), attack(_attack) {}
-void Monster::attackAction() const
-{
-}
-int Monster::getHp()
-{
-	return hp;
-}
-int Monster::getAttack()
-{
-	return attack;
-}
-void Monster::defend()
-{
-	if (hp < maxhp)
-		hp += 1;
-}
-
-string Monster::getName() const
-{
-	return name;
-}
+Monster::Monster(string _name, int _hp, int _attack) : Entity(_name, _hp, _attack) {}
 
 Monster::~Monster() {}
+
+Monster::Monster()
+{
+}
 
 Goblin::Goblin() : Monster("Goblin",10,5) {}
 

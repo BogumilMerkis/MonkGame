@@ -1,22 +1,16 @@
 using namespace std;
 #include <string>
 #include <memory>
+#include "Entity.h"
 #pragma once
 
-class Monster {
-protected:
-	string name;
-	int hp;
-	int maxhp = hp;
-	int attack;
+class Monster : public Entity{
+
 public:
 	Monster(string _name, int _hp, int _attack);
-	virtual void attackAction() const = 0;
-	int getHp();
-	int getAttack();
-	void defend();
-	string getName() const;
 	virtual ~Monster();
+
+	Monster();
 };
 
 class Goblin : public Monster {

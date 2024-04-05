@@ -17,6 +17,7 @@
 #include <Dungeon.h>
 #include <monster.h>
 #include <iostream>
+#include <Entity.h>
 
 // Data
 static LPDIRECT3D9              g_pD3D = nullptr;
