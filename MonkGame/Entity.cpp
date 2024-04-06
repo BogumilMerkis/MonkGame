@@ -6,6 +6,7 @@ Entity::Entity(string _name, int _hp, int _attack) : name(_name), hp(_hp), maxhp
 {
 }
 
+
 Entity::~Entity()
 {
 }

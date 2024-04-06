@@ -9,8 +9,6 @@ class Monster : public Entity{
 public:
 	Monster(string _name, int _hp, int _attack);
 	virtual ~Monster();
-
-	Monster();
 };
 
 class Goblin : public Monster {

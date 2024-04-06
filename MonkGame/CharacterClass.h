@@ -2,14 +2,14 @@
 #include "Entity.h"
 #include <string>
 /* Class to add new classes with varying stats.
-A Struct could 
+
 */ 
-class CharacterClass : public Entity
+class CharacterClass
 {
 private:
 	string classDescription;
 public:
-	CharacterClass(string classDescription);
+	CharacterClass(string _classDescription, string _name, int _hp, int _attack);
 	virtual ~CharacterClass();
 
 };
@@ -17,5 +17,6 @@ public:
 class Monk : public CharacterClass {
 public:
 	Monk();
+	virtual ~Monk();
 };
 
