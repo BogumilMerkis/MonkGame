@@ -6,19 +6,19 @@
 using namespace std;
 
 
-	class overlay{
+	class Overlay{
 	
 	public:
 		virtual void render();
 	
 	};
 
-	class BattleOverlay : public overlay {
+	class BattleOverlay : public Overlay {
 	public:
 		void render(string);
 	};
 
-	class MapOverlay : public overlay {
+	class MapOverlay : public Overlay {
 	public:
 		void render(Dungeon& dungeon, int currentRoomIndex);
 	};

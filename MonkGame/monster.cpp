@@ -9,8 +9,6 @@ Monster::Monster(string _name, int _hp, int _attack) : Entity(_name, _hp, _attac
 
 Monster::~Monster() {}
 
-
-
 Goblin::Goblin() : Monster("Goblin",10,5) {}
 
 

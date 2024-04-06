@@ -40,6 +40,6 @@ void MapOverlay :: render(Dungeon& dungeon, int currentRoomIndex) {
     ImGui::End();
 }
 
-void overlay::render()
+void Overlay::render()
 {
 }

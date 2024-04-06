@@ -12,7 +12,7 @@
 #include <d3d9.h>
 #include <tchar.h>
 #include <corecrt_math.h>
-#include <overlay.h>
+#include <Overlay.h>
 #include <Room.h>
 #include <Dungeon.h>
 #include <monster.h>
