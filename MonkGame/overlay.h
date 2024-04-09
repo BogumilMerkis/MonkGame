@@ -23,6 +23,12 @@ using namespace std;
 		void render(Dungeon& dungeon, int currentRoomIndex);
 	};
 
+	class CharacterCreationOverlay : public Overlay {
+
+	public:
+		void render();
+	};
+
 		
 
 

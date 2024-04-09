@@ -7,9 +7,6 @@
 using namespace std;
 
 static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-static ImGuiTreeNodeFlags tree_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Selected;
-static ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_Disabled;
-
 
 void BattleOverlay::render(string monster){
     ImGui::SetNextWindowPos(ImVec2(350, 0));
@@ -42,4 +39,13 @@ void MapOverlay :: render(Dungeon& dungeon, int currentRoomIndex) {
 
 void Overlay::render()
 {
+}
+
+void CharacterCreationOverlay::render()
+{
+    ImGui::SetNextWindowSize(ImVec2(1000, 600));
+    if(ImGui::Begin("CharCreation", 0, window_flags)) {
+        ImGui::Text("Select a class:");
+    }
+    ImGui::End();
 }

@@ -12,13 +12,13 @@
 #include <d3d9.h>
 #include <tchar.h>
 #include <corecrt_math.h>
-#include <Overlay.h>
-#include <Room.h>
-#include <Dungeon.h>
-#include <monster.h>
+#include "../Overlay.h"
+#include "../Room.h"
 #include <iostream>
-#include <Entity.h>
-
+#include "../Entity.h"
+#include "../Monster.h"
+#include "../Dungeon.h"
+#include "../PlayerCharacter.h"
 // Data
 static LPDIRECT3D9              g_pD3D = nullptr;
 static LPDIRECT3DDEVICE9        g_pd3dDevice = nullptr;
@@ -111,7 +111,10 @@ int main(int, char**)
         dungeonRooms[i]->describe(); // This will be tied to the game loop. 
 
     }
-   
+    unique_ptr<CharacterClass> monkClass = make_unique<Monk>();
+    PlayerCharacter player1("Player1", 20, 4, move(monkClass));
+    player1.attackAction();
+    player1.getClassDescription();
     // Main loop
     bool done = false;
     while (!done)
@@ -144,13 +147,13 @@ int main(int, char**)
         ImGui::NewFrame();
 
         // Overlay
+        CharacterCreationOverlay creationOverlay;
         BattleOverlay battle;
         MapOverlay mapOverlay;
         
         
         battle.render(z2.getName());
 
-        
         mapOverlay.render(d, 0);
         
 
@@ -175,7 +178,7 @@ int main(int, char**)
             ImGui::End();
         }
   
-
+        creationOverlay.render();
         // Rendering
         ImGui::EndFrame();
         g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
