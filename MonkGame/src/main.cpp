@@ -38,7 +38,7 @@ int main(int, char**)
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
     ::RegisterClassExW(&wc);
-    HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"Monk Game", WS_OVERLAPPEDWINDOW, 100, 100, 1900, 1060, nullptr, nullptr, wc.hInstance, nullptr);
+    HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"Monk Game", WS_OVERLAPPEDWINDOW, 100, 100, 1280, 720, nullptr, nullptr, wc.hInstance, nullptr);
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -75,7 +75,7 @@ int main(int, char**)
     // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    //io.Fonts->AddFontDefault();
+    io.Fonts->AddFontDefault();
     //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
@@ -87,6 +87,12 @@ int main(int, char**)
     bool show_demo_window = true;
     bool main_window = true;
     bool map_window = true;
+    bool showCharacterCreationWindow = true;
+    
+    CharacterCreationOverlay creationOverlay;
+    PlayerCharacter& p1 = creationOverlay.getCharacter();
+    
+    
     ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
     Zombie z2;
     z2.attackAction();
@@ -111,10 +117,12 @@ int main(int, char**)
         dungeonRooms[i]->describe(); // This will be tied to the game loop. 
 
     }
-    unique_ptr<CharacterClass> monkClass = make_unique<Monk>();
-    PlayerCharacter player1("Player1", 20, 4, move(monkClass));
+    /*unique_ptr<CharacterClass> monkClass = make_unique<Monk>();
+    PlayerCharacter player1("Player1", move(monkClass), "asdasdjjsa");
     player1.attackAction();
-    player1.getClassDescription();
+    player1.getClassDescription();*/
+    
+    
     // Main loop
     bool done = false;
     while (!done)
@@ -147,15 +155,20 @@ int main(int, char**)
         ImGui::NewFrame();
 
         // Overlay
-        CharacterCreationOverlay creationOverlay;
+        
         BattleOverlay battle;
-        MapOverlay mapOverlay;
-        
-        
+        MapOverlay mapOverlay;        
         battle.render(z2.getName());
-
+        
         mapOverlay.render(d, 0);
         
+        if (showCharacterCreationWindow) {
+            showCharacterCreationWindow = creationOverlay.render(showCharacterCreationWindow);
+            
+        }
+        if (!showCharacterCreationWindow) {
+            p1.attackAction();
+        }
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
@@ -176,9 +189,13 @@ int main(int, char**)
             ImGui::Text("Player 2 Health");
             ImGui::ProgressBar(0.5f, ImVec2(0.0f, 0.0f)); // Change the value as per your need
             ImGui::End();
+            
         }
-  
-        creationOverlay.render();
+        
+        
+        
+        
+        
         // Rendering
         ImGui::EndFrame();
         g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
@@ -198,7 +215,6 @@ int main(int, char**)
         if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
             ResetDevice();
     }
-
     ImGui_ImplDX9_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
@@ -206,7 +222,7 @@ int main(int, char**)
     CleanupDeviceD3D();
     ::DestroyWindow(hwnd);
     ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
-
+    
     return 0;
 }
 

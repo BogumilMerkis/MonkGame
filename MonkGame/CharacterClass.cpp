@@ -1,7 +1,13 @@
 #include "CharacterClass.h"
 
-CharacterClass::CharacterClass(string _name, int _hp, int _attack) : name(_name), hp(_hp), maxhp(_hp), attack(_attack)
+
+
+CharacterClass::CharacterClass(string _name, int _hp, int _attack)
 {
+	this->name = _name;
+	this->hp = _hp;
+	this->maxhp = _hp;
+	this->attack = _attack;
 }
 
 string CharacterClass::attackText() const
@@ -13,7 +19,6 @@ string CharacterClass::getClassDescription() const
 {
 	return "Base class";
 }
-
 
 CharacterClass::~CharacterClass()
 {
@@ -30,7 +35,17 @@ string Monk::attackText() const
 
 string Monk::getClassDescription() const
 {
-	return "A disciplined warrior who has honed their bodies and minds into instruments of deadly combat.";
+	return "A disciplined warrior who has honed their body and minds into instruments of deadly combat.";
+}
+
+int Monk::getStartingHp() const
+{
+	return 15;
+}
+
+int Monk::getStartingAttack() const
+{
+	return 3;
 }
 
 Monk::~Monk()
@@ -49,6 +64,16 @@ string Barbarian::attackText() const
 string Barbarian::getClassDescription() const
 {
 	return "A primal warrior, channeling their rage to become a fierce combatant.";
+}
+
+int Barbarian::getStartingHp() const
+{
+	return 10;
+}
+
+int Barbarian::getStartingAttack() const
+{
+	return 5;
 }
 
 Barbarian::~Barbarian()

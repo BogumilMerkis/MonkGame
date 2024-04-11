@@ -1,9 +1,12 @@
 #include <iostream>
 #include "imgui.h"
-#include "overlay.h"
+#include "Overlay.h"
 #include <string>
 #include "Dungeon.h"
 #include <vector>
+#include "CharacterClass.h"
+#include "PlayerCharacter.h"
+
 using namespace std;
 
 static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -41,11 +44,65 @@ void Overlay::render()
 {
 }
 
-void CharacterCreationOverlay::render()
+
+bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
+    
+        ImGui::Begin("Character Creation", &showCharacterCreationWindow);
+
+        // Class selection
+        ImGui::Text("Select Class:");
+        ImGui::RadioButton("Monk", &selectedClass, 1);
+        ImGui::SameLine();
+        ImGui::RadioButton("Barbarian", &selectedClass, 2);
+
+        // Name input
+        ImGui::InputText("Name", playerName, sizeof(playerName));
+
+        // Description input
+        ImGui::InputTextMultiline("Description", playerDescription, sizeof(playerDescription));
+
+        if (ImGui::Button("Create Character")) {
+            try {
+                modifyCharacter();
+                
+                // Character created successfully, reset inputs
+                playerName[0] = '\0';
+                playerDescription[0] = '\0';
+                selectedClass = 0;
+                ImGui::End();
+                return false;
+            }
+            catch (const exception& e) {
+                // Handle error, maybe display a message to the user
+            }
+        }
+        ImGui::End();
+        return showCharacterCreationWindow;
+}
+
+PlayerCharacter& CharacterCreationOverlay::getCharacter()
 {
-    ImGui::SetNextWindowSize(ImVec2(1000, 600));
-    if(ImGui::Begin("CharCreation", 0, window_flags)) {
-        ImGui::Text("Select a class:");
+    return character;
+}
+
+void CharacterCreationOverlay::modifyCharacter() {
+    // Modify the character object based on user input
+    character.setPlayerName(playerName);
+    switch (selectedClass) {
+    case 1:
+        character.setCharacterClass(make_unique<Monk>());
+        break;
+    case 2:
+        character.setCharacterClass(make_unique<Barbarian>());
+        break;
     }
-    ImGui::End();
+    character.setDescription(playerDescription);
+}
+
+CharacterCreationOverlay::CharacterCreationOverlay() : playerName{'\0'}, playerDescription{'\0'}
+{
+}
+
+CharacterCreationOverlay::~CharacterCreationOverlay()
+{
 }

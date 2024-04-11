@@ -8,14 +8,22 @@ using namespace std;
 
 class PlayerCharacter : public Entity
 {
-private:
+protected:
+	string playerName;
 	unique_ptr<CharacterClass> characterClass;
-	const string description;
+	string description;
 public:
-	PlayerCharacter(string _name, int _hp, int _attack, unique_ptr<CharacterClass> _characterClass);
-	void setDescription(string description) const;
+
+	//PlayerCharacter(string playerName, unique_ptr<CharacterClass> characterClass, string description);
+	void setDescription(char* description);
+	PlayerCharacter(const string& playerName, unique_ptr<CharacterClass> characterClass, const string& description);
 	void attackAction() const override;
-	void getClassDescription() const;
+	void getClassDescription();
+	void setPlayerName(char* playerName);
+	void setCharacterClass(unique_ptr<CharacterClass> characterClass);
+
+	PlayerCharacter createPlayerCharacter(string playerName,string playerDescription, int classSelected);
+
 	
 };
 
