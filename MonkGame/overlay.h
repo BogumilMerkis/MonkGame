@@ -12,7 +12,7 @@ using namespace std;
 	public:
 		virtual void render(string);
 	};
-
+	
 	class BattleOverlay : public Overlay {
 	public:
 		void render(string) override;
@@ -21,6 +21,7 @@ using namespace std;
 	class MapOverlay : public Overlay {
 	public:
 		void render(Dungeon& dungeon, int& currentRoomIndex);
+		void startBattle(string monsterName);
 	};
 
 	class CharacterCreationOverlay : public Overlay{
@@ -37,7 +38,7 @@ using namespace std;
 		virtual ~CharacterCreationOverlay();
 		bool render(bool);
 		PlayerCharacter& getCharacter();
-		int getNumRooms();
+		int getNumRooms() const;
 	};
 
 		

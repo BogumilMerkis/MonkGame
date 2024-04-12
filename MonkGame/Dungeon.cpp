@@ -48,7 +48,6 @@ bool Dungeon::generate(int numRooms) {
 
 	// Randomly choose a room to connect
 	srand(time(NULL));
-	cout << rand();
 	// Connect rooms
 	
 	for (int i = 0; i <= numRooms - 3; i++) {

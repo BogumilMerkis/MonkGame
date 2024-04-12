@@ -44,6 +44,11 @@ void EmptyRoom::interact(Dungeon& dungeon) {
 
 MonsterRoom::MonsterRoom(unique_ptr<Monster> _monster) : Room(), monster(move(_monster)) {}
 
+Monster* MonsterRoom::getMonster() const
+{
+	return monster.get();
+}
+
 string MonsterRoom::describe() const {
 	return "This room contains a  %s", monster->getName();
 }

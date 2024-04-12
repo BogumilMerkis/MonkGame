@@ -38,7 +38,7 @@ private:
 	unique_ptr<Monster> monster;
 public:
 	MonsterRoom(unique_ptr<Monster> _monster);
-
+	 Monster* getMonster() const;
 	string describe() const override;
 	void interact(Dungeon& dungeon) override;
 };

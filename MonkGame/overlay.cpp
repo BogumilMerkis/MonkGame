@@ -1,5 +1,4 @@
 #include <iostream>
-#include "imgui.h"
 #include "Overlay.h"
 #include <string>
 #include "Dungeon.h"
@@ -7,11 +6,15 @@
 #include "CharacterClass.h"
 #include "PlayerCharacter.h"
 #include <imgui_internal.h>
+#include <d3d9.h>
+#include <d3dx9.h>
+#include <d3dx9tex.h>
+
+
 
 using namespace std;
 
 static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-
 void BattleOverlay::render(string monster){
     ImGui::SetNextWindowPos(ImVec2(350, 0));
 
@@ -21,7 +24,27 @@ void BattleOverlay::render(string monster){
     ImGui::End();
 }
 
-void MapOverlay :: render(Dungeon& dungeon, int& currentRoomIndex) {
+
+void MapOverlay::startBattle(string monsterName) {
+    // Load the goblin image
+
+    //IDirect3DDevice9Ex_CreateTexture
+    ImGui::Begin("Battle", 0, window_flags | ImGuiWindowFlags_NoCollapse);
+    ImGui::Text("             ,      ,");
+    ImGui::Text("            /(.-""-.)\\");
+    ImGui::Text("        |\  \/      \/  /|");
+    ImGui::Text("        |\  \/      \/  /|");
+    // Display the goblin image
+
+    ImGui::Text("Prepare to fight %s!", monsterName.c_str());
+    if (ImGui::Button("Start Battle")) {
+        // Handle battle logic here
+    }
+
+
+}
+
+void MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex) {
     Room* currentRoom = dungeon.getRooms()[currentRoomIndex];
     
     ImGui::Begin("Dungeon Map",0, window_flags);
@@ -30,17 +53,34 @@ void MapOverlay :: render(Dungeon& dungeon, int& currentRoomIndex) {
     ImGui::Text("Current Room: %d", currentRoomIndex + 1);
     ImGui::Text("Description: %s", currentRoom->describe().c_str());
     ImGui::Separator();
+    ImGui::Text("           ,      ,");
+    ImGui::Text("          / (.-""-.) \\");
+    ImGui::Text("      |\\  \\/      \\/  /|");
+    ImGui::Text("      | \\ / =.  .= \\ / |");
+    ImGui::Text("       \\( \   o\\/o   / )/");
+    ImGui::Text("       \\_, '-/  \\-' ,_/");
 
     // Display connected rooms
-    ImGui::Text("Connected Rooms:");
-    
-    if (currentRoomIndex >= 0 && currentRoomIndex < dungeon.getRooms().size()) {
-        const vector<Room*>& connectedRooms = dungeon.getRooms()[currentRoomIndex]->getConnectedRooms();
-        for (int i = 0; i < connectedRooms.size(); i++) {
-            string buttonLabel = "Room " + to_string(i + 1);
-            ImGui::SameLine();
+   
+    if (typeid(*currentRoom) == typeid(MonsterRoom)) {
+        cout << "hi";
+        MonsterRoom* monsterRoom = dynamic_cast<MonsterRoom*>(currentRoom);
+        string buttonLabel = "Fight " + monsterRoom->getMonster()->getName();
+        if (ImGui::Button(buttonLabel.c_str())) {
+            // Implement your fight logic here
+            startBattle(monsterRoom->getMonster()->getName());
+            ImGui::End();
+
+        }
+    }
+    else {
+        ImGui::Text("Connected Rooms:");
+        vector<Room*> connectedRooms = dungeon.getRooms()[currentRoomIndex]->getConnectedRooms();
+
+        for (Room* room : connectedRooms) {
+            string buttonLabel = "Room " + to_string(room->getRoomNumber());
             if (ImGui::Button(buttonLabel.c_str())) {
-                currentRoomIndex = i;
+                currentRoomIndex = room->getRoomNumber() - 1;
             }
         }
     }
@@ -48,20 +88,22 @@ void MapOverlay :: render(Dungeon& dungeon, int& currentRoomIndex) {
 }
 
 bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
-        Monk monk =  Monk();
+        // Empty object examples instatiated for tooltips
+        Monk monk =  Monk(); 
         Barbarian barb =  Barbarian();
+
         ImGui::Begin("Character Creation", &showCharacterCreationWindow, window_flags);
 
         // Class selection
         ImGui::Text("Select Class:");
         ImGui::RadioButton("Monk", &selectedClass, 1);
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-            ImGui::SetTooltip("%s", monk.getClassDescription().c_str());
+            ImGui::SetTooltip("%s Hp: %d, Attack: %d", monk.getClassDescription().c_str(), monk.getStartingHp(), monk.getStartingAttack());
         ImGui::SameLine();
         
         ImGui::RadioButton("Barbarian", &selectedClass, 2);
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-            ImGui::SetTooltip("%s", barb.getClassDescription().c_str());
+            ImGui::SetTooltip("%s Hp: %d, Attack: %d", barb.getClassDescription().c_str(), barb.getStartingHp(), barb.getStartingAttack());
         ImGui::Separator();
         // Name input
         ImGui::InputText("Name", playerName, sizeof(playerName));
@@ -78,7 +120,7 @@ bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
         // Enable or disable Create Character button based on input validation
         bool canCreateCharacter = nameFilled && descriptionFilled && classSelected;
 
-        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !canCreateCharacter);
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !canCreateCharacter); // Disable button from allowing character creation
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, canCreateCharacter ? 1.0f : 0.5f); // Change opacity alpha to 0.5f if conditions aren't met
 
         if (ImGui::Button("Create Character")) {
@@ -93,7 +135,7 @@ bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
                 
                 // Pop flags, end render
                 pop();
-                return false;
+                return false; // close window
             }
             catch (const exception& e) {
                 cout << "Unexpected Error: SEEK HELP";
@@ -101,7 +143,7 @@ bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
         }
         // Pop flags, end render
         pop();
-        return showCharacterCreationWindow;
+        return showCharacterCreationWindow; // keep window
 }
 
 PlayerCharacter& CharacterCreationOverlay::getCharacter()
@@ -109,7 +151,7 @@ PlayerCharacter& CharacterCreationOverlay::getCharacter()
     return character;
 }
 
-int CharacterCreationOverlay::getNumRooms()
+int CharacterCreationOverlay::getNumRooms() const
 {
     return numRooms;
 }
