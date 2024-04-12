@@ -6,9 +6,8 @@
 #include "CharacterClass.h"
 #include "PlayerCharacter.h"
 #include <imgui_internal.h>
-#include <d3d9.h>
-#include <d3dx9.h>
-#include <d3dx9tex.h>
+
+#include "LoadTexture.h"
 
 
 
@@ -25,26 +24,31 @@ void BattleOverlay::render(string monster){
 }
 
 
-void MapOverlay::startBattle(string monsterName) {
+void MapOverlay::startBattle(string monsterName, ID3D11Device* g_pd3dDevice) {
     // Load the goblin image
 
     //IDirect3DDevice9Ex_CreateTexture
-    ImGui::Begin("Battle", 0, window_flags | ImGuiWindowFlags_NoCollapse);
-    ImGui::Text("             ,      ,");
-    ImGui::Text("            /(.-""-.)\\");
-    ImGui::Text("        |\  \/      \/  /|");
-    ImGui::Text("        |\  \/      \/  /|");
+    ImGui::Begin("Battle", 0, window_flags);
+    int my_image_width = 0;
+    int my_image_height = 0;
+    ID3D11ShaderResourceView* my_texture = NULL;
+    bool ret = LoadTextureFromFile(g_pd3dDevice,"./goblin.png", &my_texture, &my_image_width, &my_image_height);
+    IM_ASSERT(ret);
     // Display the goblin image
-
+    ImGui::Begin("DirectX11 Texture Test");
+    ImGui::Text("pointer = %p", my_texture);
+    ImGui::Text("size = %d x %d", my_image_width, my_image_height);
+    ImGui::Image((void*)my_texture, ImVec2(my_image_width, my_image_height));
+    
     ImGui::Text("Prepare to fight %s!", monsterName.c_str());
     if (ImGui::Button("Start Battle")) {
         // Handle battle logic here
     }
 
-
+    ImGui::End();
 }
 
-void MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex) {
+void MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g_pd3dDevice) {
     Room* currentRoom = dungeon.getRooms()[currentRoomIndex];
     
     ImGui::Begin("Dungeon Map",0, window_flags);
@@ -52,14 +56,7 @@ void MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex) {
     // Display current room
     ImGui::Text("Current Room: %d", currentRoomIndex + 1);
     ImGui::Text("Description: %s", currentRoom->describe().c_str());
-    ImGui::Separator();
-    ImGui::Text("           ,      ,");
-    ImGui::Text("          / (.-""-.) \\");
-    ImGui::Text("      |\\  \\/      \\/  /|");
-    ImGui::Text("      | \\ / =.  .= \\ / |");
-    ImGui::Text("       \\( \   o\\/o   / )/");
-    ImGui::Text("       \\_, '-/  \\-' ,_/");
-
+    
     // Display connected rooms
    
     if (typeid(*currentRoom) == typeid(MonsterRoom)) {
@@ -68,7 +65,7 @@ void MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex) {
         string buttonLabel = "Fight " + monsterRoom->getMonster()->getName();
         if (ImGui::Button(buttonLabel.c_str())) {
             // Implement your fight logic here
-            startBattle(monsterRoom->getMonster()->getName());
+            startBattle(monsterRoom->getMonster()->getName(), g_pd3dDevice);
             ImGui::End();
 
         }

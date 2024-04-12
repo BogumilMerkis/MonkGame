@@ -1,4 +1,4 @@
-﻿// Dear ImGui: standalone example application for DirectX 9
+﻿// Dear ImGui: standalone example application for DirectX 11
 
 // Learn about Dear ImGui:
 // - FAQ                  https://dearimgui.com/faq
@@ -7,10 +7,9 @@
 // - Introduction, links and more at the top of imgui.cpp
 
 #include "imgui.h"
-#define STBI_ASSERT(x)
-#define STB_IMAGE_IMPLEMENTATION
-#include "imgui_impl_dx9.h"
-#include <d3dx9.h>
+
+#include "imgui_impl_dx11.h"
+#include <d3d11.h>
 #include "imgui_impl_win32.h"
 #include <tchar.h>
 #include <corecrt_math.h>
@@ -21,19 +20,22 @@
 #include "../Monster.h"
 #include "../Dungeon.h"
 #include "../PlayerCharacter.h"
+#include "../LoadTexture.h"
 
 // Data
-static LPDIRECT3D9              g_pD3D = nullptr;
-static LPDIRECT3DDEVICE9        g_pd3dDevice = nullptr;
+static ID3D11Device* g_pd3dDevice = nullptr;
+static ID3D11DeviceContext* g_pd3dDeviceContext = nullptr;
+static IDXGISwapChain* g_pSwapChain = nullptr;
 static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
-static D3DPRESENT_PARAMETERS    g_d3dpp = {};
+static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr;
+
 
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
-void ResetDevice();
+void CreateRenderTarget();
+void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 
 
 // Main code
@@ -70,7 +72,7 @@ int main(int, char**)
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
-    ImGui_ImplDX9_Init(g_pd3dDevice);
+    ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -94,6 +96,9 @@ int main(int, char**)
     bool map_window = true;
     bool showCharacterCreationWindow = true;
     
+
+   
+
     CharacterCreationOverlay creationOverlay;
     BattleOverlay battle;
     MapOverlay mapOverlay;
@@ -119,6 +124,12 @@ int main(int, char**)
 
     Dungeon d;
     bool dungeonGen = false;
+
+    int my_image_width = 0;
+    int my_image_height = 0;
+    ID3D11ShaderResourceView* my_texture = NULL;
+    bool ret = LoadTextureFromFile(g_pd3dDevice,"./goblin.png", &my_texture, &my_image_width, &my_image_height);
+    IM_ASSERT(ret);
     
     /*unique_ptr<CharacterClass> monkClass = make_unique<Monk>();
     PlayerCharacter player1("Player1", move(monkClass), "asdasdjjsa");
@@ -145,14 +156,14 @@ int main(int, char**)
         // Handle window resize (we don't resize directly in the WM_SIZE handler)
         if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
         {
-            g_d3dpp.BackBufferWidth = g_ResizeWidth;
-            g_d3dpp.BackBufferHeight = g_ResizeHeight;
+            CleanupRenderTarget();
+            g_pSwapChain->ResizeBuffers(0, g_ResizeWidth, g_ResizeHeight, DXGI_FORMAT_UNKNOWN, 0);
             g_ResizeWidth = g_ResizeHeight = 0;
-            ResetDevice();
+            CreateRenderTarget();
         }
 
         // Start the Dear ImGui frame
-        ImGui_ImplDX9_NewFrame();
+        ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
         // Overlay
@@ -160,11 +171,17 @@ int main(int, char**)
             
         battle.render(z2.getName());
         
-        
         // Game Logic Loop
         // Create character -> select class, name, description, dungeon size
         if (showCharacterCreationWindow) { 
             showCharacterCreationWindow = creationOverlay.render(showCharacterCreationWindow);
+            
+
+            /*ImGui::Begin("DirectX11 Texture Test");
+            ImGui::Text("pointer = %p", my_texture);
+            ImGui::Text("size = %d x %d", my_image_width, my_image_height);
+            ImGui::Image((void*)my_texture, ImVec2(my_image_width, my_image_height));
+            ImGui::End();*/
         }
         if (!showCharacterCreationWindow && !p1Bool) {
             p1Bool = p1.attackAction(p1Bool);
@@ -173,10 +190,10 @@ int main(int, char**)
             dungeonGen = d.generate(creationOverlay.getNumRooms());
             d.getStartingRoom();
             d.display();
-             vector<Room*>& dungeonRooms = d.getRooms();
+            vector<Room*>& dungeonRooms = d.getRooms();
         }
         else if(dungeonGen) {
-            mapOverlay.render(d, currentRoomIndex);
+            mapOverlay.render(d, currentRoomIndex, g_pd3dDevice);
         }
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
@@ -200,34 +217,30 @@ int main(int, char**)
             ImGui::End();
             
         }
-        
         // Rendering
-        ImGui::EndFrame();
-        g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-        g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-        g_pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-        D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(clear_color.x * clear_color.w * 255.0f), (int)(clear_color.y * clear_color.w * 255.0f), (int)(clear_color.z * clear_color.w * 255.0f), (int)(clear_color.w * 255.0f));
-        g_pd3dDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
-        if (g_pd3dDevice->BeginScene() >= 0)
-        {
-            ImGui::Render();
-            ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-            g_pd3dDevice->EndScene();
-        }
-        HRESULT result = g_pd3dDevice->Present(nullptr, nullptr, nullptr, nullptr);
+     ImGui::Render();
+     const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+     g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
+     g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
+     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-        // Handle loss of D3D9 device
-        if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
-            ResetDevice();
+     g_pSwapChain->Present(1, 0); // Present with vsync
+     //g_pSwapChain->Present(0, 0); // Present without vsync
     }
-    ImGui_ImplDX9_Shutdown();
+
+    // Cleanup
+    ImGui_ImplDX11_Shutdown();
+
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
 
     CleanupDeviceD3D();
     ::DestroyWindow(hwnd);
     ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
-    
+
+
+   
+
     return 0;
 }
 
@@ -235,37 +248,56 @@ int main(int, char**)
 
 bool CreateDeviceD3D(HWND hWnd)
 {
-    if ((g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == nullptr)
+    // Setup swap chain
+    DXGI_SWAP_CHAIN_DESC sd;
+    ZeroMemory(&sd, sizeof(sd));
+    sd.BufferCount = 2;
+    sd.BufferDesc.Width = 0;
+    sd.BufferDesc.Height = 0;
+    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sd.BufferDesc.RefreshRate.Numerator = 60;
+    sd.BufferDesc.RefreshRate.Denominator = 1;
+    sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    sd.OutputWindow = hWnd;
+    sd.SampleDesc.Count = 1;
+    sd.SampleDesc.Quality = 0;
+    sd.Windowed = TRUE;
+    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+
+    UINT createDeviceFlags = 0;
+    //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    D3D_FEATURE_LEVEL featureLevel;
+    const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
+    HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
+    if (res == DXGI_ERROR_UNSUPPORTED) // Try high-performance WARP software driver if hardware is not available.
+        res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
+    if (res != S_OK)
         return false;
 
-    // Create the D3DDevice
-    ZeroMemory(&g_d3dpp, sizeof(g_d3dpp));
-    g_d3dpp.Windowed = TRUE;
-    g_d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    g_d3dpp.BackBufferFormat = D3DFMT_UNKNOWN; // Need to use an explicit format with alpha if needing per-pixel alpha composition.
-    g_d3dpp.EnableAutoDepthStencil = TRUE;
-    g_d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
-    g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;           // Present with vsync
-    //g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;   // Present without vsync, maximum unthrottled framerate
-    if (g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pd3dDevice) < 0)
-        return false;
-
+    CreateRenderTarget();
     return true;
 }
 
 void CleanupDeviceD3D()
 {
+    CleanupRenderTarget();
+    if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = nullptr; }
+    if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = nullptr; }
     if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = nullptr; }
-    if (g_pD3D) { g_pD3D->Release(); g_pD3D = nullptr; }
 }
 
-void ResetDevice()
+void CreateRenderTarget()
 {
-    ImGui_ImplDX9_InvalidateDeviceObjects();
-    HRESULT hr = g_pd3dDevice->Reset(&g_d3dpp);
-    if (hr == D3DERR_INVALIDCALL)
-        IM_ASSERT(0);
-    ImGui_ImplDX9_CreateDeviceObjects();
+    ID3D11Texture2D* pBackBuffer;
+    g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+    g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_mainRenderTargetView);
+    pBackBuffer->Release();
+}
+
+void CleanupRenderTarget()
+{
+    if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
 }
 
 // Forward declare message handler from imgui_impl_win32.cpp

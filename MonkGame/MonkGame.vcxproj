@@ -113,7 +113,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,12 +138,13 @@
     <ClCompile Include="CharacterClass.cpp" />
     <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="LoadTexture.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Overlay.cpp" />
     <ClCompile Include="PlayerCharacter.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="vendor\imgui\backends\imgui_impl_dx9.cpp" />
+    <ClCompile Include="vendor\imgui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="vendor\imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />
     <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
@@ -153,12 +156,13 @@
     <ClInclude Include="CharacterClass.h" />
     <ClInclude Include="Dungeon.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="LoadTexture.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="Overlay.h" />
     <ClInclude Include="PlayerCharacter.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Room.h" />
-    <ClInclude Include="vendor\imgui\backends\imgui_impl_dx9.h" />
+    <ClInclude Include="vendor\imgui\backends\imgui_impl_dx11.h" />
     <ClInclude Include="vendor\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />

@@ -3,7 +3,7 @@
 #include "Room.h"
 #include "Dungeon.h"
 #include "PlayerCharacter.h"
-#include <unordered_set>
+#include <d3d11.h>
 #pragma once
 using namespace std;
 
@@ -20,8 +20,8 @@ using namespace std;
 
 	class MapOverlay : public Overlay {
 	public:
-		void render(Dungeon& dungeon, int& currentRoomIndex);
-		void startBattle(string monsterName);
+		void render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g_pd3dDevice);
+		void startBattle(string monsterName, ID3D11Device* g_pd3dDevice);
 	};
 
 	class CharacterCreationOverlay : public Overlay{
