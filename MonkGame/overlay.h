@@ -3,33 +3,35 @@
 #include "Room.h"
 #include "Dungeon.h"
 #include "PlayerCharacter.h"
+#include <unordered_set>
 #pragma once
 using namespace std;
 
 
 	class Overlay{
 	public:
-		virtual void render();
+		virtual void render(string);
 	};
 
 	class BattleOverlay : public Overlay {
 	public:
-		void render(string);
+		void render(string) override;
 	};
 
 	class MapOverlay : public Overlay {
 	public:
-		void render(Dungeon& dungeon, int currentRoomIndex);
+		void render(Dungeon& dungeon, int& currentRoomIndex);
 	};
 
 	class CharacterCreationOverlay : public Overlay{
 	private:
 		int numRooms = 8; // Amount of rooms to be generated in the dungeon
-		char playerName[256];
-		char playerDescription[1024];
+		char playerName[256]; // Buffer for player name input
+		char playerDescription[1024]; // Buffer for player description input
 		int selectedClass = 0; // 0 for none, 1 for Monk, 2 for Barbarian
-		PlayerCharacter character = PlayerCharacter("", make_unique<Monk>(), "");
+		PlayerCharacter character = PlayerCharacter("", make_unique<Monk>(), ""); // default initialiser
 		void modifyCharacter();
+		void pop();
 	public:
 		CharacterCreationOverlay();
 		virtual ~CharacterCreationOverlay();

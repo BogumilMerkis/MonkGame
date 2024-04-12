@@ -21,42 +21,47 @@ void BattleOverlay::render(string monster){
     ImGui::End();
 }
 
-
-void MapOverlay :: render(Dungeon& dungeon, int currentRoomIndex) {
+void MapOverlay :: render(Dungeon& dungeon, int& currentRoomIndex) {
+    Room* currentRoom = dungeon.getRooms()[currentRoomIndex];
+    
     ImGui::Begin("Dungeon Map",0, window_flags);
-
+    
     // Display current room
     ImGui::Text("Current Room: %d", currentRoomIndex + 1);
+    ImGui::Text("Description: %s", currentRoom->describe().c_str());
     ImGui::Separator();
 
     // Display connected rooms
     ImGui::Text("Connected Rooms:");
-    const vector<Room*>& connectedRooms = dungeon.getRooms()[currentRoomIndex]->getConnectedRooms();
+    
     if (currentRoomIndex >= 0 && currentRoomIndex < dungeon.getRooms().size()) {
-        for (int i = 0; i < connectedRooms.size(); ++i) {
-            ImGui::Text("- Room %d", connectedRooms[i]->getRoomNumber());
+        const vector<Room*>& connectedRooms = dungeon.getRooms()[currentRoomIndex]->getConnectedRooms();
+        for (int i = 0; i < connectedRooms.size(); i++) {
+            string buttonLabel = "Room " + to_string(i + 1);
             ImGui::SameLine();
-            ImGui::Button("hi");
+            if (ImGui::Button(buttonLabel.c_str())) {
+                currentRoomIndex = i;
+            }
         }
     }
-
     ImGui::End();
 }
 
-void Overlay::render()
-{
-}
-
-
 bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
-    
+        Monk monk =  Monk();
+        Barbarian barb =  Barbarian();
         ImGui::Begin("Character Creation", &showCharacterCreationWindow, window_flags);
 
         // Class selection
         ImGui::Text("Select Class:");
         ImGui::RadioButton("Monk", &selectedClass, 1);
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+            ImGui::SetTooltip("%s", monk.getClassDescription().c_str());
         ImGui::SameLine();
+        
         ImGui::RadioButton("Barbarian", &selectedClass, 2);
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+            ImGui::SetTooltip("%s", barb.getClassDescription().c_str());
         ImGui::Separator();
         // Name input
         ImGui::InputText("Name", playerName, sizeof(playerName));
@@ -74,11 +79,11 @@ bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
         bool canCreateCharacter = nameFilled && descriptionFilled && classSelected;
 
         ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !canCreateCharacter);
-        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, canCreateCharacter ? 1.0f : 0.5f);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, canCreateCharacter ? 1.0f : 0.5f); // Change opacity alpha to 0.5f if conditions aren't met
 
         if (ImGui::Button("Create Character")) {
             try {
-
+                
                 modifyCharacter();
                 
                 // Character created successfully, reset inputs
@@ -87,20 +92,15 @@ bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
                 selectedClass = 0;
                 
                 // Pop flags, end render
-                ImGui::PopItemFlag();
-                ImGui::PopStyleVar();
-                ImGui::End();
+                pop();
                 return false;
             }
             catch (const exception& e) {
                 cout << "Unexpected Error: SEEK HELP";
             }
         }
-
         // Pop flags, end render
-        ImGui::PopItemFlag();
-        ImGui::PopStyleVar();
-        ImGui::End();
+        pop();
         return showCharacterCreationWindow;
 }
 
@@ -128,10 +128,21 @@ void CharacterCreationOverlay::modifyCharacter() {
     character.setDescription(playerDescription);
 }
 
+void CharacterCreationOverlay::pop()
+{
+    ImGui::PopItemFlag();
+    ImGui::PopStyleVar();
+    ImGui::End();
+}
+
 CharacterCreationOverlay::CharacterCreationOverlay() : playerName{'\0'}, playerDescription{'\0'}
 {
 }
 
 CharacterCreationOverlay::~CharacterCreationOverlay()
+{
+}
+
+void Overlay::render(string)
 {
 }

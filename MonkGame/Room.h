@@ -1,5 +1,5 @@
 #include <vector>
-#include "monster.h"
+#include "Monster.h"
 #pragma once
 using namespace std;
 
@@ -18,7 +18,7 @@ public:
 
 	const vector<Room*>& getConnectedRooms() const;
 
-	virtual void describe() const;
+	virtual string describe() const;
 
 	virtual void interact(Dungeon& dungeon) = 0;
 
@@ -29,7 +29,7 @@ class EmptyRoom : public Room {
 public:
 	EmptyRoom();
 
-	void describe() const override;
+	string describe() const override;
 	void interact(Dungeon& dungeon) override;
 };
 
@@ -39,7 +39,7 @@ private:
 public:
 	MonsterRoom(unique_ptr<Monster> _monster);
 
-	void describe() const override;
+	string describe() const override;
 	void interact(Dungeon& dungeon) override;
 };
 
@@ -47,6 +47,6 @@ class TreasureRoom : public Room {
 public:
 	TreasureRoom();
 
-	void describe() const override;
+	string describe() const override;
 	void interact(Dungeon& dungeon) override;
 };

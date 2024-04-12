@@ -7,11 +7,11 @@ class Dungeon
 {
 private:
 	vector<Room*> rooms;
+	void generateTreasureRoom(Room* lastRoom);
 public:
 	
 	Dungeon();
 	~Dungeon();
-
 	bool generate(int numRooms);
 	void display() const;
 	Room* getStartingRoom() const;

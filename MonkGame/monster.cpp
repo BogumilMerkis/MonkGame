@@ -53,4 +53,4 @@ unique_ptr<Monster> SkeletonFactory::createMonster() {
 
 unique_ptr<Monster> GiantSpiderFactory::createMonster() {
 	return make_unique<GiantSpider>();
-}
+};

@@ -90,11 +90,13 @@ int main(int, char**)
     bool showCharacterCreationWindow = true;
     
     CharacterCreationOverlay creationOverlay;
+    BattleOverlay battle;
+    MapOverlay mapOverlay;
     PlayerCharacter& p1 = creationOverlay.getCharacter();
-    
     
     ImVec4 clear_color = ImVec4(0.0f, 0.25f, 0.0f, 1.0f);
     Zombie z2;
+    int currentRoomIndex = 0;
     bool z2Bool = false;
     bool p1Bool = false;
     z2Bool = z2.attackAction(z2Bool);
@@ -150,8 +152,7 @@ int main(int, char**)
         ImGui::NewFrame();
         // Overlay
         
-        BattleOverlay battle;
-        MapOverlay mapOverlay;        
+            
         battle.render(z2.getName());
         
         
@@ -170,7 +171,7 @@ int main(int, char**)
              vector<Room*>& dungeonRooms = d.getRooms();
         }
         else if(dungeonGen) {
-            mapOverlay.render(d, 0);
+            mapOverlay.render(d, currentRoomIndex);
         }
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).

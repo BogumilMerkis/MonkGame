@@ -58,5 +58,6 @@ public:
 };
 
 class GiantSpiderFactory : public Factory {
+public:
 	unique_ptr<Monster> createMonster() override;
 };

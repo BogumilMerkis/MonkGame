@@ -20,8 +20,9 @@ const vector<Room*>& Room::getConnectedRooms() const {
 	return connectedRooms;
 }
 
-void Room::describe() const
+string Room::describe() const
 {
+	return "";
 }
 
 int Room::getRoomNumber() const
@@ -33,8 +34,8 @@ int Room::getRoomNumber() const
 EmptyRoom::EmptyRoom() : Room() {}
 
 
-void EmptyRoom::describe() const {
-	cout << "this is an empty room\n";
+string EmptyRoom::describe() const {
+	return "this is an empty room";
 }
 
 void EmptyRoom::interact(Dungeon& dungeon) {
@@ -43,8 +44,8 @@ void EmptyRoom::interact(Dungeon& dungeon) {
 
 MonsterRoom::MonsterRoom(unique_ptr<Monster> _monster) : Room(), monster(move(_monster)) {}
 
-void MonsterRoom::describe() const {
-	cout << "This room contains a  " << monster->getName() << endl;
+string MonsterRoom::describe() const {
+	return "This room contains a  %s", monster->getName();
 }
 
 void MonsterRoom::interact(Dungeon& dungeon) {
@@ -53,8 +54,8 @@ void MonsterRoom::interact(Dungeon& dungeon) {
 
 TreasureRoom::TreasureRoom() : Room() {}
 
-void TreasureRoom::describe() const {
-	cout << "A large, open treasure room filled with gold and jewels.";
+string TreasureRoom::describe() const {
+	return  "A large, open treasure room, filled with gold and jewels.";
 
 }
 
