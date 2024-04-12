@@ -9,30 +9,31 @@ class Monster : public Entity{
 public:
 	Monster(string _name, int _hp, int _attack);
 	virtual ~Monster();
+	bool attackAction(bool) override = 0;
 };
 
 class Goblin : public Monster {
 public:
 	Goblin();
-	void attackAction() const;
+	bool attackAction(bool) override;
 };
 
 class Zombie : public Monster {
 public:
 	Zombie();
-	void attackAction() const;
+	bool attackAction(bool) override;
 };
 
 class Skeleton : public Monster {
 public:
 	Skeleton();
-	void attackAction() const;
+	bool attackAction(bool) override;
 };
 
 class GiantSpider : public Monster {
 public:
 	GiantSpider();
-	void attackAction() const;
+	bool attackAction(bool) override;
 };
 
 class Factory {

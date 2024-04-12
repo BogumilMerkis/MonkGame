@@ -10,13 +10,15 @@ PlayerCharacter::PlayerCharacter(const string& playerName, unique_ptr<CharacterC
 {
 }
 
-void PlayerCharacter::attackAction() const
+bool PlayerCharacter::attackAction(bool a) 
 {
     if (characterClass != nullptr) {
         cout << getName() << characterClass->attackText() << endl;
+        return true;
     }
     else {
         cout << "Error: Character class not initialized." << endl;
+        return a;
     }
 }
 

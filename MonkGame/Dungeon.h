@@ -12,7 +12,7 @@ public:
 	Dungeon();
 	~Dungeon();
 
-	void generate();
+	bool generate(int numRooms);
 	void display() const;
 	Room* getStartingRoom() const;
 	vector<Room*>& getRooms();

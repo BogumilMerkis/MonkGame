@@ -12,27 +12,31 @@ Monster::~Monster() {}
 Goblin::Goblin() : Monster("Goblin",10,5) {}
 
 
-void Goblin::attackAction() const {
+bool Goblin::attackAction(bool)  {
 	cout << "The Goblin attacks you with it's club!";
+	return true;
 }
 
 Zombie::Zombie() :Monster("Zombie", 8, 3) {}
 
-void Zombie::attackAction() const {
+bool Zombie::attackAction(bool) {
 	cout << "The Zombie attacks you with it's rotting arms! Dealing "<< attack << " damage.";
+	return true;
 }
 
 Skeleton::Skeleton() :Monster("Skeleton", 13, 1) {}
 
 
-void Skeleton::attackAction() const {
+bool Skeleton::attackAction(bool)  {
 	cout << "The Skeleton shoots you with an arrow! Dealing " << attack << " damage.";
+	return true;
 }
 
 GiantSpider::GiantSpider() : Monster("Giant Spider", 6, 4) {}
 
-void GiantSpider::attackAction() const {
+bool GiantSpider::attackAction(bool) {
 	cout << "The Giant Spider bites you with it's fangs! Dealing %s damage", attack;
+	return true;
 }
 
 unique_ptr<Monster> GoblinFactory::createMonster() {

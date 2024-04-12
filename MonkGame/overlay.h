@@ -24,6 +24,7 @@ using namespace std;
 
 	class CharacterCreationOverlay : public Overlay{
 	private:
+		int numRooms = 8; // Amount of rooms to be generated in the dungeon
 		char playerName[256];
 		char playerDescription[1024];
 		int selectedClass = 0; // 0 for none, 1 for Monk, 2 for Barbarian
@@ -34,6 +35,7 @@ using namespace std;
 		virtual ~CharacterCreationOverlay();
 		bool render(bool);
 		PlayerCharacter& getCharacter();
+		int getNumRooms();
 	};
 
 		

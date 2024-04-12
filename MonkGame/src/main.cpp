@@ -93,36 +93,31 @@ int main(int, char**)
     PlayerCharacter& p1 = creationOverlay.getCharacter();
     
     
-    ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    ImVec4 clear_color = ImVec4(0.0f, 0.25f, 0.0f, 1.0f);
     Zombie z2;
-    z2.attackAction();
+    bool z2Bool = false;
+    bool p1Bool = false;
+    z2Bool = z2.attackAction(z2Bool);
     unique_ptr<Factory> fac;
     unique_ptr<Monster> monster;
     fac = make_unique < GoblinFactory>();
     monster = fac->createMonster();
     cout << "Goblin HP: " << monster->getHp() << ", Attack: " << monster->getAttack() << endl;
-    monster->attackAction();
+    /*; monster->attackAction();*/
 
     fac = make_unique<ZombieFactory>();
     monster = fac->createMonster();
     cout << "Goblin HP: " << monster->getHp() << ", Attack: " << monster->getAttack() << endl;
-    monster->attackAction();
+    /*; monster->attackAction();*/
 
     Dungeon d;
-    d.generate();
-    d.getStartingRoom();
-    d.display();
-    const vector<Room*>& dungeonRooms = d.getRooms();
-    for (int i = 0; i < d.getRooms().size(); i++) { // USE SQUARE NUMBERS FOR DUNGEON SIZE.
-        dungeonRooms[i]->describe(); // This will be tied to the game loop. 
-
-    }
+    bool dungeonGen = false;
+    
     /*unique_ptr<CharacterClass> monkClass = make_unique<Monk>();
     PlayerCharacter player1("Player1", move(monkClass), "asdasdjjsa");
     player1.attackAction();
     player1.getClassDescription();*/
-    
-    
+  
     // Main loop
     bool done = false;
     while (!done)
@@ -153,21 +148,29 @@ int main(int, char**)
         ImGui_ImplDX9_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-
         // Overlay
         
         BattleOverlay battle;
         MapOverlay mapOverlay;        
         battle.render(z2.getName());
         
-        mapOverlay.render(d, 0);
         
-        if (showCharacterCreationWindow) {
+        // Game Logic Loop
+        // Create character -> select class, name, description, dungeon size
+        if (showCharacterCreationWindow) { 
             showCharacterCreationWindow = creationOverlay.render(showCharacterCreationWindow);
-            
         }
-        if (!showCharacterCreationWindow) {
-            p1.attackAction();
+        if (!showCharacterCreationWindow && !p1Bool) {
+            p1Bool = p1.attackAction(p1Bool);
+        }
+        if (!dungeonGen && !showCharacterCreationWindow) {
+            dungeonGen = d.generate(creationOverlay.getNumRooms());
+            d.getStartingRoom();
+            d.display();
+             vector<Room*>& dungeonRooms = d.getRooms();
+        }
+        else if(dungeonGen) {
+            mapOverlay.render(d, 0);
         }
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
@@ -191,10 +194,6 @@ int main(int, char**)
             ImGui::End();
             
         }
-        
-        
-        
-        
         
         // Rendering
         ImGui::EndFrame();

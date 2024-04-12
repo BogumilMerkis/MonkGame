@@ -15,7 +15,7 @@ public:
 	Entity(string _name, int _hp, int _attack);
 	Entity();
 	virtual ~Entity();
-	virtual void attackAction() const = 0;
+	virtual bool attackAction(bool) = 0;
 	int getHp() const;
 	int getAttack() const;
 	void defend();

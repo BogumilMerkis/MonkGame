@@ -6,6 +6,7 @@
 #include <vector>
 #include "CharacterClass.h"
 #include "PlayerCharacter.h"
+#include <imgui_internal.h>
 
 using namespace std;
 
@@ -31,10 +32,12 @@ void MapOverlay :: render(Dungeon& dungeon, int currentRoomIndex) {
     // Display connected rooms
     ImGui::Text("Connected Rooms:");
     const vector<Room*>& connectedRooms = dungeon.getRooms()[currentRoomIndex]->getConnectedRooms();
-    for (int i = 0; i < connectedRooms.size(); ++i) {
-        ImGui::Text("- Room %d", connectedRooms[i]->getRoomNumber());
-        ImGui::SameLine();
-        ImGui::Button("hi");
+    if (currentRoomIndex >= 0 && currentRoomIndex < dungeon.getRooms().size()) {
+        for (int i = 0; i < connectedRooms.size(); ++i) {
+            ImGui::Text("- Room %d", connectedRooms[i]->getRoomNumber());
+            ImGui::SameLine();
+            ImGui::Button("hi");
+        }
     }
 
     ImGui::End();
@@ -47,35 +50,56 @@ void Overlay::render()
 
 bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
     
-        ImGui::Begin("Character Creation", &showCharacterCreationWindow);
+        ImGui::Begin("Character Creation", &showCharacterCreationWindow, window_flags);
 
         // Class selection
         ImGui::Text("Select Class:");
         ImGui::RadioButton("Monk", &selectedClass, 1);
         ImGui::SameLine();
         ImGui::RadioButton("Barbarian", &selectedClass, 2);
-
+        ImGui::Separator();
         // Name input
         ImGui::InputText("Name", playerName, sizeof(playerName));
 
         // Description input
         ImGui::InputTextMultiline("Description", playerDescription, sizeof(playerDescription));
 
+        // Slider input number of rooms in dungeon
+        ImGui::SliderInt("Number of Rooms", &numRooms, 3, 16);
+        bool nameFilled = strlen(playerName) > 0;
+        bool descriptionFilled = strlen(playerDescription) > 0;
+        bool classSelected = selectedClass != 0;
+
+        // Enable or disable Create Character button based on input validation
+        bool canCreateCharacter = nameFilled && descriptionFilled && classSelected;
+
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !canCreateCharacter);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, canCreateCharacter ? 1.0f : 0.5f);
+
         if (ImGui::Button("Create Character")) {
             try {
+
                 modifyCharacter();
                 
                 // Character created successfully, reset inputs
                 playerName[0] = '\0';
                 playerDescription[0] = '\0';
                 selectedClass = 0;
+                
+                // Pop flags, end render
+                ImGui::PopItemFlag();
+                ImGui::PopStyleVar();
                 ImGui::End();
                 return false;
             }
             catch (const exception& e) {
-                // Handle error, maybe display a message to the user
+                cout << "Unexpected Error: SEEK HELP";
             }
         }
+
+        // Pop flags, end render
+        ImGui::PopItemFlag();
+        ImGui::PopStyleVar();
         ImGui::End();
         return showCharacterCreationWindow;
 }
@@ -83,6 +107,11 @@ bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
 PlayerCharacter& CharacterCreationOverlay::getCharacter()
 {
     return character;
+}
+
+int CharacterCreationOverlay::getNumRooms()
+{
+    return numRooms;
 }
 
 void CharacterCreationOverlay::modifyCharacter() {

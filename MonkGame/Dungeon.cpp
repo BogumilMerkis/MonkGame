@@ -13,7 +13,7 @@ Dungeon::~Dungeon() {
 	}
 }
 
-void Dungeon::generate() {
+bool Dungeon::generate(int numRooms) {
 	// Generate room objects and fill vector
 	// Generate the dungeon with the treasure room towards the end of the dungeon (at a dead end would be best). 
 
@@ -22,8 +22,9 @@ void Dungeon::generate() {
 
 	// Randomly choose a room to connect
 	srand(time(NULL));
+	cout << rand();
 	// Connect rooms
-	for (int i = 0; i <= 8; ++i) {
+	for (int i = 0; i <= numRooms - 3; i++) {
 		Room* newRoom = nullptr;
 		
 		int roomType = rand() % 4;
@@ -37,10 +38,10 @@ void Dungeon::generate() {
 				int monsterType = rand() % 4;
 				switch (monsterType) {
 					case 0:
-						newRoom = new MonsterRoom(make_unique<Goblin>());
+						newRoom = new MonsterRoom(make_unique<GoblinFactory>()->createMonster());
 						break;
 					case 1:
-						newRoom = new MonsterRoom(make_unique<Zombie>());
+						newRoom = new MonsterRoom(make_unique<ZombieFactory>()->createMonster());
 						break;
 					case 2:
 						newRoom = new MonsterRoom(make_unique<Skeleton>());
@@ -53,14 +54,8 @@ void Dungeon::generate() {
 		}
 
 		Room* connectedRoom = nullptr;
-		for (Room* room : rooms) {
-			if (room->getConnectedRooms().size() < 3) {
-				connectedRoom = room;
-				break;
-			}
-		}
-		if (connectedRoom == nullptr) {
-			break;
+		while (!connectedRoom || connectedRoom->getConnectedRooms().size() > 3) {
+			connectedRoom = rooms[rand() % rooms.size()];
 		}
 		
 		newRoom->addConnectedRoom(connectedRoom);
@@ -72,6 +67,7 @@ void Dungeon::generate() {
 	tRoom->addConnectedRoom(lastRoom);
 	lastRoom->addConnectedRoom(tRoom);
 	rooms.push_back(tRoom);
+	return true;
 
 }
 
