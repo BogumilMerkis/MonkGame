@@ -54,14 +54,13 @@ bool Dungeon::generate(int numRooms) {
 		Room* newRoom = nullptr;
 		Room* connectedRoom = nullptr;
 
-		int roomType = rand() % 4;
+		int roomType = rand() % 3;
 		switch (roomType) {
 			case 0:
 			case 1:
-			case 2:
 				newRoom = new EmptyRoom();
 				break;
-			case 3:
+			case 2:
 				int monsterType = rand() % 4;
 				switch (monsterType) {
 					case 0:
@@ -122,4 +121,14 @@ Room* Dungeon::getStartingRoom() const {
 vector<Room*>& Dungeon::getRooms()
 {
 	return rooms;
+}
+
+Room* Dungeon::getCurrentRoom(int index) const
+{
+	if (index >= 0 && index < rooms.size()) {
+		return rooms[index];
+	}
+	else {
+		return nullptr;
+	}
 }

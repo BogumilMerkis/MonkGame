@@ -9,19 +9,22 @@ using namespace std;
 
 
 	class Overlay{
+	private:
+		const string filepath = "./src/images/";
 	public:
-		virtual void render(string);
+		virtual void render();
+		bool entityImage(string monsterName, ID3D11Device* g_pd3dDevice);
+		
 	};
 	
 	class BattleOverlay : public Overlay {
 	public:
-		void render(string) override;
+		void render(Monster* monster, Room* currentRoom, PlayerCharacter& p1);
 	};
 
 	class MapOverlay : public Overlay {
 	public:
-		void render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g_pd3dDevice);
-		void startBattle(string monsterName, ID3D11Device* g_pd3dDevice);
+		bool render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g_pd3dDevice, PlayerCharacter& p1);
 	};
 
 	class CharacterCreationOverlay : public Overlay{
@@ -30,13 +33,13 @@ using namespace std;
 		char playerName[256]; // Buffer for player name input
 		char playerDescription[1024]; // Buffer for player description input
 		int selectedClass = 0; // 0 for none, 1 for Monk, 2 for Barbarian
-		PlayerCharacter character = PlayerCharacter("", make_unique<Monk>(), ""); // default initialiser
-		void modifyCharacter();
+		PlayerCharacter character;
+		void createCharacter(int selectedClass);
 		void pop();
 	public:
 		CharacterCreationOverlay();
 		virtual ~CharacterCreationOverlay();
-		bool render(bool);
+		bool render(bool showCharacterCreationWindow, ID3D11Device* g_pd3dDevice);
 		PlayerCharacter& getCharacter();
 		int getNumRooms() const;
 	};

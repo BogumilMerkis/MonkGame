@@ -16,4 +16,5 @@ public:
 	void display() const;
 	Room* getStartingRoom() const;
 	vector<Room*>& getRooms();
+	Room* getCurrentRoom(int index) const;
 };

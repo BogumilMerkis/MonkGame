@@ -132,7 +132,22 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="goblin.png">
+    <Image Include="src\images\Goblin.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="src\images\Skeleton.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="src\images\Zombie.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="src\images\Giant Spider.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="src\images\Barbarian.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="src\images\Monk.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

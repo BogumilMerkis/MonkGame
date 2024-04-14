@@ -104,6 +104,7 @@ int main(int, char**)
     MapOverlay mapOverlay;
     PlayerCharacter& p1 = creationOverlay.getCharacter();
     
+    
     ImVec4 clear_color = ImVec4(0.0f, 0.25f, 0.0f, 1.0f);
     Zombie z2;
     int currentRoomIndex = 0;
@@ -119,18 +120,12 @@ int main(int, char**)
 
     fac = make_unique<ZombieFactory>();
     monster = fac->createMonster();
-    cout << "Goblin HP: " << monster->getHp() << ", Attack: " << monster->getAttack() << endl;
+    cout << "Zombie HP: " << monster->getHp() << ", Attack: " << monster->getAttack() << endl;
     /*; monster->attackAction();*/
 
     Dungeon d;
     bool dungeonGen = false;
-
-    int my_image_width = 0;
-    int my_image_height = 0;
-    ID3D11ShaderResourceView* my_texture = NULL;
-    bool ret = LoadTextureFromFile(g_pd3dDevice,"./goblin.png", &my_texture, &my_image_width, &my_image_height);
-    IM_ASSERT(ret);
-    
+    bool monsterEncounter = false;
     /*unique_ptr<CharacterClass> monkClass = make_unique<Monk>();
     PlayerCharacter player1("Player1", move(monkClass), "asdasdjjsa");
     player1.attackAction();
@@ -169,39 +164,41 @@ int main(int, char**)
         // Overlay
         
             
-        battle.render(z2.getName());
+        //battle.render(z2.getName());
         
         // Game Logic Loop
         // Create character -> select class, name, description, dungeon size
         if (showCharacterCreationWindow) { 
-            showCharacterCreationWindow = creationOverlay.render(showCharacterCreationWindow);
-            
-
-            /*ImGui::Begin("DirectX11 Texture Test");
-            ImGui::Text("pointer = %p", my_texture);
-            ImGui::Text("size = %d x %d", my_image_width, my_image_height);
-            ImGui::Image((void*)my_texture, ImVec2(my_image_width, my_image_height));
-            ImGui::End();*/
+            showCharacterCreationWindow = creationOverlay.render(showCharacterCreationWindow, g_pd3dDevice);
         }
         if (!showCharacterCreationWindow && !p1Bool) {
-            p1Bool = p1.attackAction(p1Bool);
+            cout << "HP: " << p1.getHp();
+            p1Bool = p1.attackAction(p1Bool);     
         }
         if (!dungeonGen && !showCharacterCreationWindow) {
             dungeonGen = d.generate(creationOverlay.getNumRooms());
+            vector<Room*>& dungeonRooms = d.getRooms();
+            for (int i = 0; i < dungeonRooms.size(); i++) {
+                Room* currentRoom = dungeonRooms[i];
+                cout << "Room " << currentRoom->getRoomNumber() << ": " << currentRoom->describe() << endl;
+            }
             d.getStartingRoom();
             d.display();
-            vector<Room*>& dungeonRooms = d.getRooms();
+            
         }
         else if(dungeonGen) {
-            mapOverlay.render(d, currentRoomIndex, g_pd3dDevice);
+            
+            monsterEncounter = mapOverlay.render(d, currentRoomIndex, g_pd3dDevice, p1);
+            if (monsterEncounter) {
+                Room* currentRoom = d.getCurrentRoom(currentRoomIndex);
+                Monster* monster_in_room = dynamic_cast<MonsterRoom*>(currentRoom)->getMonster();
+                battle.render(monster_in_room, currentRoom, p1);
+            }
         }
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
-
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-        
 
         // 3. Show another simple window.
         if (main_window)

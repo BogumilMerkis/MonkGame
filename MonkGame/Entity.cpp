@@ -38,6 +38,17 @@ void Entity::defend()
 		hp += 1;
 }
 
+int Entity::getMaxHp() const
+{
+	return maxhp;
+}
+
+bool Entity::healHpMax()
+{
+	hp = maxhp;
+	return true;
+}
+
 string Entity::getName() const 
 {
 	return name;

@@ -9,7 +9,7 @@ Monster::Monster(string _name, int _hp, int _attack) : Entity(_name, _hp, _attac
 
 Monster::~Monster() {}
 
-Goblin::Goblin() : Monster("Goblin",10,5) {}
+Goblin::Goblin() : Monster("Goblin",10,2) {}
 
 
 bool Goblin::attackAction(bool)  {
@@ -32,7 +32,7 @@ bool Skeleton::attackAction(bool)  {
 	return true;
 }
 
-GiantSpider::GiantSpider() : Monster("Giant Spider", 6, 4) {}
+GiantSpider::GiantSpider() : Monster("Giant Spider", 5, 5) {}
 
 bool GiantSpider::attackAction(bool) {
 	cout << "The Giant Spider bites you with it's fangs! Dealing %s damage", attack;

@@ -6,72 +6,64 @@
 #include "CharacterClass.h"
 #include "PlayerCharacter.h"
 #include <imgui_internal.h>
-
 #include "LoadTexture.h"
-
-
+#include <cstdlib>
 
 using namespace std;
 
 static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-void BattleOverlay::render(string monster){
-    ImGui::SetNextWindowPos(ImVec2(350, 0));
 
-    if (ImGui::Begin("Battle", 0, window_flags)) {
-        ImGui::Text("Monk vs %s", monster.c_str());
-    }
-    ImGui::End();
-}
-
-
-void MapOverlay::startBattle(string monsterName, ID3D11Device* g_pd3dDevice) {
-    // Load the goblin image
-
-    //IDirect3DDevice9Ex_CreateTexture
-    ImGui::Begin("Battle", 0, window_flags);
+bool Overlay::entityImage(string monsterName, ID3D11Device* g_pd3dDevice) // Universal Helper
+{
+    string path = filepath;
     int my_image_width = 0;
     int my_image_height = 0;
     ID3D11ShaderResourceView* my_texture = NULL;
-    bool ret = LoadTextureFromFile(g_pd3dDevice,"./goblin.png", &my_texture, &my_image_width, &my_image_height);
+    path += monsterName + ".png";
+    bool ret = LoadTextureFromFile(g_pd3dDevice, path.c_str(), &my_texture, &my_image_width, &my_image_height);
     IM_ASSERT(ret);
-    // Display the goblin image
-    ImGui::Begin("DirectX11 Texture Test");
-    ImGui::Text("pointer = %p", my_texture);
-    ImGui::Text("size = %d x %d", my_image_width, my_image_height);
-    ImGui::Image((void*)my_texture, ImVec2(my_image_width, my_image_height));
-    
-    ImGui::Text("Prepare to fight %s!", monsterName.c_str());
-    if (ImGui::Button("Start Battle")) {
-        // Handle battle logic here
-    }
+    float aspect_ratio = float(my_image_width) / float(my_image_height);
+    int new_width = int(400 * aspect_ratio);
+    int new_height = int(400 * aspect_ratio);
+    ImGui::Image((void*)my_texture, ImVec2(new_height, new_width));
+    return true;
+}
 
+void BattleOverlay::render(Monster* monster, Room* currentRoom, PlayerCharacter& p1){
+    ImGui::SetNextWindowPos(ImVec2(350, 0));
+
+    ImGui::Begin("Battle", 0, window_flags);
+    ImGui::Text("%s vs %s", p1.getName().c_str(), monster->getName().c_str());
+    ImGui::Separator();
+    
     ImGui::End();
 }
 
-void MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g_pd3dDevice) {
+bool MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g_pd3dDevice, PlayerCharacter& p1) {
+    ImGui::SetNextWindowPos(ImVec2(100, 0));
     Room* currentRoom = dungeon.getRooms()[currentRoomIndex];
-    
     ImGui::Begin("Dungeon Map",0, window_flags);
-    
+
     // Display current room
     ImGui::Text("Current Room: %d", currentRoomIndex + 1);
-    ImGui::Text("Description: %s", currentRoom->describe().c_str());
     
-    // Display connected rooms
+    if (typeid(*currentRoom) == typeid(MonsterRoom)) { // Check if current room is a monster room
+        MonsterRoom* monsterRoom = dynamic_cast<MonsterRoom*>(currentRoom); // Re-instantiate current room as a monster room for local use
    
-    if (typeid(*currentRoom) == typeid(MonsterRoom)) {
-        cout << "hi";
-        MonsterRoom* monsterRoom = dynamic_cast<MonsterRoom*>(currentRoom);
-        string buttonLabel = "Fight " + monsterRoom->getMonster()->getName();
-        if (ImGui::Button(buttonLabel.c_str())) {
-            // Implement your fight logic here
-            startBattle(monsterRoom->getMonster()->getName(), g_pd3dDevice);
-            ImGui::End();
-
-        }
-    }
-    else {
-        ImGui::Text("Connected Rooms:");
+        ImGui::Text("%s", monsterRoom->describe().c_str()); // Describe whats in the monster room
+        string monsterName = monsterRoom->getMonster()->getName();
+        string buttonLabel = "Fight " + monsterName;
+        if (entityImage(monsterName, g_pd3dDevice)) {
+            if (ImGui::Button(buttonLabel.c_str())) {
+                ImGui::SameLine();
+                ImGui::End();
+                return true;
+            }
+        } 
+    }else if(typeid(*currentRoom) == typeid(EmptyRoom)){ // Check if current room is an empty room
+        // Display connected rooms
+        ImGui::Text("%s", currentRoom->describe().c_str()); // Describe current room (not monster room)
+        ImGui::Text("Connected Rooms (click to travel):");
         vector<Room*> connectedRooms = dungeon.getRooms()[currentRoomIndex]->getConnectedRooms();
 
         for (Room* room : connectedRooms) {
@@ -80,11 +72,21 @@ void MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g
                 currentRoomIndex = room->getRoomNumber() - 1;
             }
         }
+        if (ImGui::Button("Pray"))
+            p1.healHpMax();
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+            ImGui::SetTooltip("Heal to full hp. Current hp: %d/%d", p1.getHp(), p1.getMaxHp());
+        cout << p1.getAttack();
+        p1.getClassDescription();
+
+
+        ImGui::End();
+        return false;
     }
     ImGui::End();
 }
 
-bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
+bool CharacterCreationOverlay::render(bool showCharacterCreationWindow, ID3D11Device* g_pd3dDevice) {
         // Empty object examples instatiated for tooltips
         Monk monk =  Monk(); 
         Barbarian barb =  Barbarian();
@@ -94,13 +96,17 @@ bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
         // Class selection
         ImGui::Text("Select Class:");
         ImGui::RadioButton("Monk", &selectedClass, 1);
-        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
             ImGui::SetTooltip("%s Hp: %d, Attack: %d", monk.getClassDescription().c_str(), monk.getStartingHp(), monk.getStartingAttack());
+            entityImage("Monk", g_pd3dDevice); // Display image of Monk
+        }
         ImGui::SameLine();
         
         ImGui::RadioButton("Barbarian", &selectedClass, 2);
-        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
             ImGui::SetTooltip("%s Hp: %d, Attack: %d", barb.getClassDescription().c_str(), barb.getStartingHp(), barb.getStartingAttack());
+            entityImage("Barbarian", g_pd3dDevice); // Display image of Barbarian
+        }
         ImGui::Separator();
         // Name input
         ImGui::InputText("Name", playerName, sizeof(playerName));
@@ -123,13 +129,7 @@ bool CharacterCreationOverlay::render(bool showCharacterCreationWindow) {
         if (ImGui::Button("Create Character")) {
             try {
                 
-                modifyCharacter();
-                
-                // Character created successfully, reset inputs
-                playerName[0] = '\0';
-                playerDescription[0] = '\0';
-                selectedClass = 0;
-                
+                createCharacter(selectedClass);
                 // Pop flags, end render
                 pop();
                 return false; // close window
@@ -153,18 +153,19 @@ int CharacterCreationOverlay::getNumRooms() const
     return numRooms;
 }
 
-void CharacterCreationOverlay::modifyCharacter() {
+void CharacterCreationOverlay::createCharacter(int selectedClass) {
     // Modify the character object based on user input
-    character.setPlayerName(playerName);
+    
     switch (selectedClass) {
-    case 1:
-        character.setCharacterClass(make_unique<Monk>());
-        break;
-    case 2:
-        character.setCharacterClass(make_unique<Barbarian>());
+    case 1: {
+        character = PlayerCharacter(playerName, make_unique<Monk>(), playerDescription);
         break;
     }
-    character.setDescription(playerDescription);
+    case 2: {
+        character = PlayerCharacter(playerName, make_unique<Barbarian>(), playerDescription);
+        break;
+    }
+    }
 }
 
 void CharacterCreationOverlay::pop()
@@ -182,6 +183,7 @@ CharacterCreationOverlay::~CharacterCreationOverlay()
 {
 }
 
-void Overlay::render(string)
+void Overlay::render()
 {
 }
+

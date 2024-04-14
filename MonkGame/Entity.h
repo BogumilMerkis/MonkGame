@@ -19,6 +19,8 @@ public:
 	int getHp() const;
 	int getAttack() const;
 	void defend();
+	int getMaxHp() const;
+	bool healHpMax();
 	string getName() const;
 };
 

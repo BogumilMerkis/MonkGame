@@ -22,7 +22,7 @@ const vector<Room*>& Room::getConnectedRooms() const {
 
 string Room::describe() const
 {
-	return "";
+	return "Default room describer";
 }
 
 int Room::getRoomNumber() const
@@ -35,7 +35,7 @@ EmptyRoom::EmptyRoom() : Room() {}
 
 
 string EmptyRoom::describe() const {
-	return "this is an empty room";
+	return "This is an empty room";
 }
 
 void EmptyRoom::interact(Dungeon& dungeon) {
@@ -50,7 +50,7 @@ Monster* MonsterRoom::getMonster() const
 }
 
 string MonsterRoom::describe() const {
-	return "This room contains a  %s", monster->getName();
+	return "This room contains a " + monster->getName();
 }
 
 void MonsterRoom::interact(Dungeon& dungeon) {

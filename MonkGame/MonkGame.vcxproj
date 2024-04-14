@@ -182,7 +182,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="goblin.png" />
+    <Image Include="src\images\Barbarian.png" />
+    <Image Include="src\images\Giant Spider.png" />
+    <Image Include="src\images\Goblin.png" />
+    <Image Include="src\images\Monk.png" />
+    <Image Include="src\images\Skeleton.png" />
+    <Image Include="src\images\Zombie.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -10,6 +10,10 @@ PlayerCharacter::PlayerCharacter(const string& playerName, unique_ptr<CharacterC
 {
 }
 
+PlayerCharacter::PlayerCharacter()
+{
+}
+
 bool PlayerCharacter::attackAction(bool a) 
 {
     if (characterClass != nullptr) {
@@ -31,8 +35,6 @@ void PlayerCharacter::setPlayerName(char* playerName)
 {
     this->name = playerName;
 }
-
-
 
 void PlayerCharacter::setDescription(char* description)
 {
