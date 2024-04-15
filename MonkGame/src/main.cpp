@@ -92,18 +92,13 @@ int main(int, char**)
 
     // Our state
     bool show_demo_window = true;
-    bool main_window = true;
     bool map_window = true;
     bool showCharacterCreationWindow = true;
-    
-
    
-
     CharacterCreationOverlay creationOverlay;
     BattleOverlay battle;
     MapOverlay mapOverlay;
     PlayerCharacter& p1 = creationOverlay.getCharacter();
-    
     
     ImVec4 clear_color = ImVec4(0.0f, 0.25f, 0.0f, 1.0f);
     Zombie z2;
@@ -199,21 +194,6 @@ int main(int, char**)
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
-
-        // 3. Show another simple window.
-        if (main_window)
-        {
-            ImGui::Begin("Health Bars");
-            ImGui::Text("Player 1 Health");
-            ImGui::ProgressBar(0.7f, ImVec2(0.0f, 0.0f)); // Change the value as per your need
-            ImGui::Separator();
-
-            // Draw the second health bar
-            ImGui::Text("Player 2 Health");
-            ImGui::ProgressBar(0.5f, ImVec2(0.0f, 0.0f)); // Change the value as per your need
-            ImGui::End();
-            
-        }
         // Rendering
      ImGui::Render();
      const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };

@@ -13,6 +13,8 @@ using namespace std;
 
 static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
+
+
 bool Overlay::entityImage(string monsterName, ID3D11Device* g_pd3dDevice) // Universal Helper
 {
     string path = filepath;
@@ -30,12 +32,22 @@ bool Overlay::entityImage(string monsterName, ID3D11Device* g_pd3dDevice) // Uni
 }
 
 void BattleOverlay::render(Monster* monster, Room* currentRoom, PlayerCharacter& p1){
-    ImGui::SetNextWindowPos(ImVec2(350, 0));
+    ImGui::SetNextWindowPos(ImVec2(650, 0));
 
     ImGui::Begin("Battle", 0, window_flags);
     ImGui::Text("%s vs %s", p1.getName().c_str(), monster->getName().c_str());
     ImGui::Separator();
-    
+    ImGui::Text("%s", p1.getName().c_str());
+    string hpText = to_string(p1.getHp()) + " / " + to_string(p1.getMaxHp());
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+    ImGui::ProgressBar(float(p1.getHp()/p1.getMaxHp()), ImVec2(0.0f, 0.0f), hpText.c_str()); // Change the value as per your need
+    //ImGui::Separator();
+    ImGui::Spacing();
+
+    // Draw the second health bar
+    ImGui::Text("%s", monster->getName().c_str());
+    ImGui::ProgressBar(0.5f, ImVec2(0.0f, 0.0f)); // Change the value as per your need
+    ImGui::PopStyleColor();
     ImGui::End();
 }
 
@@ -76,9 +88,6 @@ bool MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g
             p1.healHpMax();
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
             ImGui::SetTooltip("Heal to full hp. Current hp: %d/%d", p1.getHp(), p1.getMaxHp());
-        cout << p1.getAttack();
-        p1.getClassDescription();
-
 
         ImGui::End();
         return false;
@@ -135,12 +144,12 @@ bool CharacterCreationOverlay::render(bool showCharacterCreationWindow, ID3D11De
                 return false; // close window
             }
             catch (const exception& e) {
-                cout << "Unexpected Error: SEEK HELP";
+                cout << "Unexpected Error: SEEK HELP \n" << e.what();
             }
         }
         // Pop flags, end render
         pop();
-        return showCharacterCreationWindow; // keep window
+        return showCharacterCreationWindow; // keep window open just in case
 }
 
 PlayerCharacter& CharacterCreationOverlay::getCharacter()
@@ -168,7 +177,7 @@ void CharacterCreationOverlay::createCharacter(int selectedClass) {
     }
 }
 
-void CharacterCreationOverlay::pop()
+void Overlay::pop()
 {
     ImGui::PopItemFlag();
     ImGui::PopStyleVar();
@@ -186,4 +195,3 @@ CharacterCreationOverlay::~CharacterCreationOverlay()
 void Overlay::render()
 {
 }
-

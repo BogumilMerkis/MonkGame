@@ -10,8 +10,9 @@ using namespace std;
 
 	class Overlay{
 	private:
-		const string filepath = "./src/images/";
+		const string filepath = "./src/images/"; // used for images in the imgui overlays
 	public:
+		void pop();
 		virtual void render();
 		bool entityImage(string monsterName, ID3D11Device* g_pd3dDevice);
 		
@@ -35,7 +36,7 @@ using namespace std;
 		int selectedClass = 0; // 0 for none, 1 for Monk, 2 for Barbarian
 		PlayerCharacter character;
 		void createCharacter(int selectedClass);
-		void pop();
+	
 	public:
 		CharacterCreationOverlay();
 		virtual ~CharacterCreationOverlay();

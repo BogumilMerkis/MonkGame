@@ -13,8 +13,6 @@ protected:
 	unique_ptr<CharacterClass> characterClass;
 	string description;
 public:
-
-	//PlayerCharacter(string playerName, unique_ptr<CharacterClass> characterClass, string description);
 	void setDescription(char* description);
 	PlayerCharacter();
 	PlayerCharacter(const string& playerName, unique_ptr<CharacterClass> characterClass, const string& description);
