@@ -16,8 +16,9 @@ public:
 	void setDescription(char* description);
 	PlayerCharacter();
 	PlayerCharacter(const string& playerName, unique_ptr<CharacterClass> characterClass, const string& description);
-	bool attackAction(bool) override;
-	void getClassDescription();
+	string getClassDescription();
+	string getAttackText();
+	string getDefendText();
 	void setPlayerName(char* playerName);
 	void setCharacterClass(unique_ptr<CharacterClass> characterClass);
 

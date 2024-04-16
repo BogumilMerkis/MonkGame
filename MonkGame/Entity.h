@@ -1,4 +1,6 @@
 #include <string>
+#include <cstdlib>
+#include "time.h"
 #pragma once
 using namespace std;
 
@@ -14,8 +16,9 @@ public:
 	Entity(string _name, int _hp, int _attack, string _description);
 	Entity(string _name, int _hp, int _attack);
 	Entity();
+	void setHp(int newhp);
 	virtual ~Entity();
-	virtual bool attackAction(bool) = 0;
+	bool action();
 	int getHp() const;
 	int getAttack() const;
 	void defend();

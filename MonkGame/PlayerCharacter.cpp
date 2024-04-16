@@ -14,21 +14,19 @@ PlayerCharacter::PlayerCharacter()
 {
 }
 
-bool PlayerCharacter::attackAction(bool a) 
+string PlayerCharacter::getClassDescription()
 {
-    if (characterClass != nullptr) {
-        cout << getName() << characterClass->attackText() << endl;
-        return true;
-    }
-    else {
-        cout << "Error: Character class not initialized." << endl;
-        return a;
-    }
+    return characterClass->getClassDescription();
 }
 
-void PlayerCharacter::getClassDescription()
+string PlayerCharacter::getAttackText()
 {
-	cout << characterClass->getClassDescription() << endl;
+    return characterClass->getAttackText();
+}
+
+string PlayerCharacter::getDefendText()
+{
+    return characterClass->getDefendText();
 }
 
 void PlayerCharacter::setPlayerName(char* playerName)

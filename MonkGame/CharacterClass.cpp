@@ -10,10 +10,6 @@ CharacterClass::CharacterClass(string _name, int _hp, int _attack)
 	this->attack = _attack;
 }
 
-string CharacterClass::attackText() const
-{
-	return " attacks";
-}
 
 string CharacterClass::getClassDescription() const
 {
@@ -28,10 +24,16 @@ Monk::Monk() : CharacterClass("Monk", 15, 3)
 {
 }
 
-string Monk::attackText() const
+string Monk::getDefendText() const
 {
-	return " strikes with their fists dealing " + to_string(attack) + " Damage";
+	return defendText;
 }
+
+string Monk::getAttackText() const
+{
+	return attackText;
+}
+
 
 string Monk::getClassDescription() const
 {
@@ -56,9 +58,14 @@ Barbarian::Barbarian() : CharacterClass("Barbarian", 10, 5)
 {
 }
 
-string Barbarian::attackText() const
+string Barbarian::getDefendText() const
 {
-	return " brutaly swings their battleaxe dealing " + to_string(attack) + " Damage";
+	return defendText;
+}
+
+string Barbarian::getAttackText() const
+{
+	return attackText;
 }
 
 string Barbarian::getClassDescription() const

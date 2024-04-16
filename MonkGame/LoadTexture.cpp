@@ -1,14 +1,15 @@
 #include <d3d11.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "vendor/imgui/stb_image.h"
+#include <windows.h>
 
 // Simple helper function to load an image into a DX11 texture with common settings
-bool LoadTextureFromFile(ID3D11Device* g_pd3dDevice, const char* filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height)
+bool LoadTextureFromFile(ID3D11Device* g_pd3dDevice, const char* path, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height)
 {
     // Load from disk into a raw RGBA buffer
     int image_width = 0;
     int image_height = 0;
-    unsigned char* image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
+    unsigned char* image_data = stbi_load(path, &image_width, &image_height, NULL, 4);
     if (image_data == NULL)
         return false;
 
@@ -41,10 +42,10 @@ bool LoadTextureFromFile(ID3D11Device* g_pd3dDevice, const char* filename, ID3D1
     srvDesc.Texture2D.MostDetailedMip = 0;
     g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, out_srv);
     pTexture->Release();
-
+    stbi_image_free(image_data);
     *out_width = image_width;
     *out_height = image_height;
-    stbi_image_free(image_data);
+    
 
     return true;
 }

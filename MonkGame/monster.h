@@ -5,35 +5,51 @@ using namespace std;
 #pragma once
 
 class Monster : public Entity{
-
 public:
 	Monster(string _name, int _hp, int _attack);
 	virtual ~Monster();
-	bool attackAction(bool) override = 0;
+	virtual string getAttackText() = 0;
+	virtual string getDefendText() = 0;
 };
 
 class Goblin : public Monster {
+private:
+	const string attackText = "The Goblin slashes you with it's dagger! Dealing " + to_string(attack) + " damage";
+	const string defendText = "The Goblin stays back and decides what to do next, regaining 1hp";
 public:
+	string getAttackText() override;
+	string getDefendText() override;
 	Goblin();
-	bool attackAction(bool) override;
 };
 
 class Zombie : public Monster {
+private:
+	const string attackText = "The Zombie attacks you with it's rotting arms! Dealing " + to_string(attack) + " damage";
+	const string defendText = "The Zombie stumbles and waits, regaining 1hp";
 public:
+	string getAttackText() override;
+	string getDefendText() override;
 	Zombie();
-	bool attackAction(bool) override;
 };
 
 class Skeleton : public Monster {
+private:
+	const string attackText = "The Skeleton shoots you with an arrow! Dealing " + to_string(attack) + " damage";
+	const string defendText = "The Skeleton holds back, regaining 1hp";
 public:
+	string getAttackText() override;
+	string getDefendText() override;
 	Skeleton();
-	bool attackAction(bool) override;
 };
 
 class GiantSpider : public Monster {
+private:
+	const string attackText = "The Giant Spider bites you with it's fangs! Dealing " + to_string(attack) + " damage";
+	const string defendText = "The Giant Spider waits and spins a web, regaining 1hp";
 public:
+	string getAttackText() override;
+	string getDefendText() override;
 	GiantSpider();
-	bool attackAction(bool) override;
 };
 
 class Factory {

@@ -2,6 +2,12 @@
 #include <string>
 using namespace std;
 
+bool Entity::action()
+{
+	srand(time(NULL));
+	return rand()%100>=50;
+}
+
 Entity::Entity(string _name, int _hp, int _attack, string _description) : name(_name), hp(_hp), maxhp(_hp), attack(_attack)
 {
 }
@@ -19,10 +25,14 @@ Entity::Entity()
 	this->description = "";
 }
 
+void Entity::setHp(int newhp)
+{
+	this->hp = newhp;
+}
+
 Entity::~Entity()
 {
 }
-
 
 int Entity::getHp() const
 {

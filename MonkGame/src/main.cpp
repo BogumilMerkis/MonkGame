@@ -29,7 +29,6 @@ static IDXGISwapChain* g_pSwapChain = nullptr;
 static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
 static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr;
 
-
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
@@ -37,10 +36,10 @@ void CreateRenderTarget();
 void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-
 // Main code
 int main(int, char**)
 {
+    
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
@@ -103,9 +102,9 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.0f, 0.25f, 0.0f, 1.0f);
     Zombie z2;
     int currentRoomIndex = 0;
-    bool z2Bool = false;
-    bool p1Bool = false;
-    z2Bool = z2.attackAction(z2Bool);
+    if (z2.action()) {
+        cout << z2.getAttackText();
+    }
     unique_ptr<Factory> fac;
     unique_ptr<Monster> monster;
     fac = make_unique < GoblinFactory>();
@@ -121,6 +120,7 @@ int main(int, char**)
     Dungeon d;
     bool dungeonGen = false;
     bool monsterEncounter = false;
+    bool battleInProgress = false;
     /*unique_ptr<CharacterClass> monkClass = make_unique<Monk>();
     PlayerCharacter player1("Player1", move(monkClass), "asdasdjjsa");
     player1.attackAction();
@@ -156,19 +156,11 @@ int main(int, char**)
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-        // Overlay
-        
-            
-        //battle.render(z2.getName());
-        
+
         // Game Logic Loop
         // Create character -> select class, name, description, dungeon size
         if (showCharacterCreationWindow) { 
             showCharacterCreationWindow = creationOverlay.render(showCharacterCreationWindow, g_pd3dDevice);
-        }
-        if (!showCharacterCreationWindow && !p1Bool) {
-            cout << "HP: " << p1.getHp();
-            p1Bool = p1.attackAction(p1Bool);     
         }
         if (!dungeonGen && !showCharacterCreationWindow) {
             dungeonGen = d.generate(creationOverlay.getNumRooms());
@@ -179,16 +171,18 @@ int main(int, char**)
             }
             d.getStartingRoom();
             d.display();
-            
         }
         else if(dungeonGen) {
             
             monsterEncounter = mapOverlay.render(d, currentRoomIndex, g_pd3dDevice, p1);
-            if (monsterEncounter) {
-                Room* currentRoom = d.getCurrentRoom(currentRoomIndex);
-                Monster* monster_in_room = dynamic_cast<MonsterRoom*>(currentRoom)->getMonster();
-                battle.render(monster_in_room, currentRoom, p1);
+            if (monsterEncounter && !battleInProgress) {
+                battleInProgress = true;
             }
+        }
+        if (battleInProgress) {
+            Room* currentRoom = d.getCurrentRoom(currentRoomIndex);
+            Monster* monster_in_room = dynamic_cast<MonsterRoom*>(currentRoom)->getMonster();
+            battle.render(monster_in_room, currentRoom, p1);
         }
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
@@ -201,8 +195,8 @@ int main(int, char**)
      g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
      ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-     g_pSwapChain->Present(1, 0); // Present with vsync
-     //g_pSwapChain->Present(0, 0); // Present without vsync
+     //g_pSwapChain->Present(1, 0); // Present with vsync
+     g_pSwapChain->Present(0, 0); // Present without vsync
     }
 
     // Cleanup
@@ -214,10 +208,6 @@ int main(int, char**)
     CleanupDeviceD3D();
     ::DestroyWindow(hwnd);
     ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
-
-
-   
-
     return 0;
 }
 

@@ -1,5 +1,4 @@
-#include "monster.h"
-#include "imgui.h"
+#include "Monster.h"
 #include <string>
 #include <iostream>
 #pragma once
@@ -9,35 +8,54 @@ Monster::Monster(string _name, int _hp, int _attack) : Entity(_name, _hp, _attac
 
 Monster::~Monster() {}
 
+string Goblin::getAttackText()
+{
+	return attackText;
+}
+
+string Goblin::getDefendText()
+{
+	return defendText;
+}
+
+string Zombie::getAttackText()
+{
+	return attackText;
+}
+
+string Zombie::getDefendText()
+{
+	return defendText;
+}
+
+string Skeleton::getAttackText()
+{
+	return attackText;
+}
+
+string Skeleton::getDefendText()
+{
+	return defendText;
+}
+
+string GiantSpider::getAttackText()
+{
+	return attackText;
+}
+
+string GiantSpider::getDefendText()
+{
+	return defendText;
+}
+
 Goblin::Goblin() : Monster("Goblin",10,2) {}
 
+Zombie::Zombie() : Monster("Zombie", 8, 3) {}
 
-bool Goblin::attackAction(bool)  {
-	cout << "The Goblin attacks you with it's club!";
-	return true;
-}
-
-Zombie::Zombie() :Monster("Zombie", 8, 3) {}
-
-bool Zombie::attackAction(bool) {
-	cout << "The Zombie attacks you with it's rotting arms! Dealing "<< attack << " damage.";
-	return true;
-}
-
-Skeleton::Skeleton() :Monster("Skeleton", 13, 1) {}
-
-
-bool Skeleton::attackAction(bool)  {
-	cout << "The Skeleton shoots you with an arrow! Dealing " << attack << " damage.";
-	return true;
-}
+Skeleton::Skeleton() : Monster("Skeleton", 13, 1) {}
 
 GiantSpider::GiantSpider() : Monster("Giant Spider", 5, 5) {}
 
-bool GiantSpider::attackAction(bool) {
-	cout << "The Giant Spider bites you with it's fangs! Dealing %s damage", attack;
-	return true;
-}
 
 unique_ptr<Monster> GoblinFactory::createMonster() {
 	return make_unique<Goblin>();

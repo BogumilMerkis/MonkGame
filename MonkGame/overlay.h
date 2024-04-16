@@ -4,9 +4,9 @@
 #include "Dungeon.h"
 #include "PlayerCharacter.h"
 #include <d3d11.h>
+#include <windows.h>
 #pragma once
 using namespace std;
-
 
 	class Overlay{
 	private:
@@ -14,13 +14,19 @@ using namespace std;
 	public:
 		void pop();
 		virtual void render();
-		bool entityImage(string monsterName, ID3D11Device* g_pd3dDevice);
+		bool imageHelper(string fileName, ID3D11Device* g_pd3dDevice);
+
 		
 	};
 	
 	class BattleOverlay : public Overlay {
+	private:
+		int turnOrder = 1;
 	public:
+		bool clickNextTurn(bool turnOrder);
 		void render(Monster* monster, Room* currentRoom, PlayerCharacter& p1);
+		void healthBars(Monster* monster, PlayerCharacter& p1);
+		void playerTurn(Monster*, Room* currentRoom, PlayerCharacter& p1);
 	};
 
 	class MapOverlay : public Overlay {
@@ -44,8 +50,3 @@ using namespace std;
 		PlayerCharacter& getCharacter();
 		int getNumRooms() const;
 	};
-
-		
-
-
-	
