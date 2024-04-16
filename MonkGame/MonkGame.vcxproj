@@ -144,13 +144,6 @@
     <ClCompile Include="PlayerCharacter.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="vendor\imgui\backends\imgui_impl_dx11.cpp" />
-    <ClCompile Include="vendor\imgui\backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="vendor\imgui\imgui.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharacterClass.h" />
@@ -162,15 +155,6 @@
     <ClInclude Include="PlayerCharacter.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Room.h" />
-    <ClInclude Include="vendor\imgui\backends\imgui_impl_dx11.h" />
-    <ClInclude Include="vendor\imgui\backends\imgui_impl_win32.h" />
-    <ClInclude Include="vendor\imgui\imconfig.h" />
-    <ClInclude Include="vendor\imgui\imgui.h" />
-    <ClInclude Include="vendor\imgui\imgui_internal.h" />
-    <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
-    <ClInclude Include="vendor\imgui\imstb_textedit.h" />
-    <ClInclude Include="vendor\imgui\imstb_truetype.h" />
-    <ClInclude Include="vendor\imgui\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MonkGame.rc" />
@@ -180,6 +164,8 @@
     <None Include="ClassDiagram1.cd" />
     <None Include="ClassDiagram2.cd" />
     <None Include="packages.config" />
+    <None Include="vcpkg-configuration.json" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\images\Barbarian.png" />

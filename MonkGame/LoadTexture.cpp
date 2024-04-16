@@ -1,6 +1,6 @@
 #include <d3d11.h>
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include "vendor/imgui/stb_image.h"
 
 // Simple helper function to load an image into a DX11 texture with common settings
 bool LoadTextureFromFile(ID3D11Device* g_pd3dDevice, const char* filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height)
