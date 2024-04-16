@@ -4,6 +4,10 @@
 #pragma once
 using namespace std;
 
+Monster::Monster()
+{
+}
+
 Monster::Monster(string _name, int _hp, int _attack) : Entity(_name, _hp, _attack) {}
 
 Monster::~Monster() {}
@@ -50,11 +54,27 @@ string GiantSpider::getDefendText()
 
 Goblin::Goblin() : Monster("Goblin",10,2) {}
 
+Goblin::~Goblin()
+{
+}
+
 Zombie::Zombie() : Monster("Zombie", 8, 3) {}
+
+Zombie::~Zombie()
+{
+}
 
 Skeleton::Skeleton() : Monster("Skeleton", 13, 1) {}
 
+Skeleton::~Skeleton()
+{
+}
+
 GiantSpider::GiantSpider() : Monster("Giant Spider", 5, 5) {}
+
+GiantSpider::~GiantSpider()
+{
+}
 
 
 unique_ptr<Monster> GoblinFactory::createMonster() {

@@ -7,20 +7,16 @@
 // - Introduction, links and more at the top of imgui.cpp
 
 #include "../vendor/imgui/imgui.h"
-
 #include "../vendor/imgui/backends/imgui_impl_dx11.h"
 #include <d3d11.h>
 #include "../vendor/imgui/backends/imgui_impl_win32.h"
-#include <tchar.h>
-#include <corecrt_math.h>
 #include "../Overlay.h"
 #include "../Room.h"
 #include <iostream>
-#include "../Entity.h"
 #include "../Monster.h"
 #include "../Dungeon.h"
 #include "../PlayerCharacter.h"
-#include "../LoadTexture.h"
+#include <tchar.h>
 
 // Data
 static ID3D11Device* g_pd3dDevice = nullptr;
@@ -100,22 +96,8 @@ int main(int, char**)
     PlayerCharacter& p1 = creationOverlay.getCharacter();
     
     ImVec4 clear_color = ImVec4(0.0f, 0.25f, 0.0f, 1.0f);
-    Zombie z2;
     int currentRoomIndex = 0;
-    if (z2.action()) {
-        cout << z2.getAttackText();
-    }
-    unique_ptr<Factory> fac;
-    unique_ptr<Monster> monster;
-    fac = make_unique < GoblinFactory>();
-    monster = fac->createMonster();
-    cout << "Goblin HP: " << monster->getHp() << ", Attack: " << monster->getAttack() << endl;
-    /*; monster->attackAction();*/
 
-    fac = make_unique<ZombieFactory>();
-    monster = fac->createMonster();
-    cout << "Zombie HP: " << monster->getHp() << ", Attack: " << monster->getAttack() << endl;
-    /*; monster->attackAction();*/
 
     Dungeon d;
     bool dungeonGen = false;
@@ -172,31 +154,34 @@ int main(int, char**)
             d.getStartingRoom();
             d.display();
         }
-        else if(dungeonGen) {
+        else if(dungeonGen && !battleInProgress) {
             
-            monsterEncounter = mapOverlay.render(d, currentRoomIndex, g_pd3dDevice, p1);
-            if (monsterEncounter && !battleInProgress) {
+            monsterEncounter = mapOverlay.render(d, currentRoomIndex, g_pd3dDevice, p1, monsterEncounter);
+            cout << &monsterEncounter << endl;
+            if (monsterEncounter) {
                 battleInProgress = true;
             }
         }
         if (battleInProgress) {
             Room* currentRoom = d.getCurrentRoom(currentRoomIndex);
             Monster* monster_in_room = dynamic_cast<MonsterRoom*>(currentRoom)->getMonster();
-            battle.render(monster_in_room, currentRoom, p1);
+            battleInProgress = battle.render(monster_in_room, currentRoom, p1, g_pd3dDevice);
+        }
+        else if (!battleInProgress && p1.getHp() != 0) { 
+            monsterEncounter = false;
+        }
+        else if (!battleInProgress && p1.getHp() == 0) {
+            cout << "dead";
         }
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
-        // Rendering
      ImGui::Render();
      const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
      g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
      g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
      ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-     //g_pSwapChain->Present(1, 0); // Present with vsync
-     g_pSwapChain->Present(0, 0); // Present without vsync
+     g_pSwapChain->Present(1, 0); // Present with vsync
+     //g_pSwapChain->Present(0, 0); // Present without vsync
     }
 
     // Cleanup

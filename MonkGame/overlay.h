@@ -23,15 +23,16 @@ using namespace std;
 	private:
 		int turnOrder = 1;
 	public:
-		bool clickNextTurn(bool turnOrder);
-		void render(Monster* monster, Room* currentRoom, PlayerCharacter& p1);
+		bool render(Monster* monster, Room* currentRoom, PlayerCharacter& p1, ID3D11Device* g_pd3dDevice);
 		void healthBars(Monster* monster, PlayerCharacter& p1);
-		void playerTurn(Monster*, Room* currentRoom, PlayerCharacter& p1);
+		void playerTurn(Monster*, PlayerCharacter& p1, bool turn);
+		void monsterTurn(Monster*, PlayerCharacter& p1, bool turn);
+		void setTurnOrder(int);
 	};
 
 	class MapOverlay : public Overlay {
 	public:
-		bool render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g_pd3dDevice, PlayerCharacter& p1);
+		bool render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g_pd3dDevice, PlayerCharacter& p1, bool encounter);
 	};
 
 	class CharacterCreationOverlay : public Overlay{

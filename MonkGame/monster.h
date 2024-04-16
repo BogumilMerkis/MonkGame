@@ -6,6 +6,7 @@ using namespace std;
 
 class Monster : public Entity{
 public:
+	Monster();
 	Monster(string _name, int _hp, int _attack);
 	virtual ~Monster();
 	virtual string getAttackText() = 0;
@@ -20,6 +21,7 @@ public:
 	string getAttackText() override;
 	string getDefendText() override;
 	Goblin();
+	virtual ~Goblin();
 };
 
 class Zombie : public Monster {
@@ -30,6 +32,7 @@ public:
 	string getAttackText() override;
 	string getDefendText() override;
 	Zombie();
+	virtual ~Zombie();
 };
 
 class Skeleton : public Monster {
@@ -40,6 +43,7 @@ public:
 	string getAttackText() override;
 	string getDefendText() override;
 	Skeleton();
+	virtual ~Skeleton();
 };
 
 class GiantSpider : public Monster {
@@ -50,6 +54,7 @@ public:
 	string getAttackText() override;
 	string getDefendText() override;
 	GiantSpider();
+	virtual ~GiantSpider();
 };
 
 class Factory {

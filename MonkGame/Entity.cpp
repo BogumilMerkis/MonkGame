@@ -5,7 +5,7 @@ using namespace std;
 bool Entity::action()
 {
 	srand(time(NULL));
-	return rand()%100>=50;
+	return (rand()%1000) % 2;
 }
 
 Entity::Entity(string _name, int _hp, int _attack, string _description) : name(_name), hp(_hp), maxhp(_hp), attack(_attack)
