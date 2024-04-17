@@ -237,7 +237,7 @@ bool BattleOverlay::render(Monster* monster, Room* currentRoom, PlayerCharacter&
     monsterTurn(monster, p1, turn); // Handle monster turns
 
     if (monster->getHp() <= 0) { // Monster defeated
- 
+        
         ImGui::BeginPopupModal("MonsterDeadPopup", NULL, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("You have killed the %s", monster->getName().c_str());
         if (ImGui::Button("Close")) {
@@ -275,10 +275,12 @@ bool MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g
 
         if (typeid(*currentRoom) == typeid(MonsterRoom) && dynamic_cast<MonsterRoom*>(currentRoom)->getMonster()->getHp() > 0){ // Check if current room is a monster room
             encounter = true;
+           
             MonsterRoom* monsterRoom = dynamic_cast<MonsterRoom*>(currentRoom); // Re-instantiate current room as a monster room for local use
             if (monsterRoom->getMonster()->getHp() > 0){
                 ImGui::Text("%s", monsterRoom->describe().c_str()); // Describe whats in the monster room
                 string monsterName = monsterRoom->getMonster()->getName();
+                imageHelper(monsterName, g_pd3dDevice);
                 string buttonLabel = "Fight " + monsterName;
                 
                 if (ImGui::Button(buttonLabel.c_str())) {
@@ -288,7 +290,8 @@ bool MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g
                 }
             }
         }
-        if (typeid(*currentRoom) == typeid(EmptyRoom) || !encounter ){ // Check if current room is an empty room
+        if ( !encounter ){ // If there is no encounter
+            
             // Display connected rooms
             if (typeid(*currentRoom) == typeid(TreasureRoom)) {
                 ImGui::Text("Congratulations you reached the treasure!");
@@ -296,6 +299,7 @@ bool MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g
                 ImGui::End();
                 return false;
             }
+            imageHelper("EmptyRoom", g_pd3dDevice);
             ImGui::Text("%s", currentRoom->describe().c_str()); // Describe current room (not monster room)
             ImGui::Text("Connected Rooms (click to travel):");
             vector<Room*> connectedRooms = dungeon.getRooms()[currentRoomIndex]->getConnectedRooms();

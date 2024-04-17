@@ -84,10 +84,9 @@ int main(int, char**)
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
-
-    // Our state
-    bool show_demo_window = true;
-    bool map_window = true;
+    
+    // states
+    bool show_demo_window = false;
     bool showCharacterCreationWindow = true;
    
     CharacterCreationOverlay creationOverlay;
@@ -98,15 +97,10 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.0f, 0.25f, 0.0f, 1.0f);
     int currentRoomIndex = 0;
 
-
     Dungeon d;
     bool dungeonGen = false;
     bool monsterEncounter = false;
     bool battleInProgress = false;
-    /*unique_ptr<CharacterClass> monkClass = make_unique<Monk>();
-    PlayerCharacter player1("Player1", move(monkClass), "asdasdjjsa");
-    player1.attackAction();
-    player1.getClassDescription();*/
   
     // Main loop
     bool done = false;
