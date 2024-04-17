@@ -157,7 +157,6 @@ int main(int, char**)
         else if(dungeonGen && !battleInProgress) {
             
             monsterEncounter = mapOverlay.render(d, currentRoomIndex, g_pd3dDevice, p1, monsterEncounter);
-            cout << &monsterEncounter << endl;
             if (monsterEncounter) {
                 battleInProgress = true;
             }
@@ -170,8 +169,8 @@ int main(int, char**)
         else if (!battleInProgress && p1.getHp() != 0) { 
             monsterEncounter = false;
         }
-        else if (!battleInProgress && p1.getHp() == 0) {
-            cout << "dead";
+        else if (p1.getHp() <= 0) {
+            battle.dead();
         }
 
      ImGui::Render();

@@ -27,6 +27,7 @@ using namespace std;
 		void healthBars(Monster* monster, PlayerCharacter& p1);
 		void playerTurn(Monster*, PlayerCharacter& p1, bool turn);
 		void monsterTurn(Monster*, PlayerCharacter& p1, bool turn);
+		void dead();
 		void setTurnOrder(int);
 	};
 

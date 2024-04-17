@@ -8,7 +8,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <random>
 using namespace std;
 
 static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -31,6 +30,17 @@ bool Overlay::imageHelper(string fileName, ID3D11Device* g_pd3dDevice) // Univer
 
     return true;
 }
+void BattleOverlay::dead() {
+    ImGui::Begin("Death", 0, window_flags);
+    ImGui::SetWindowFontScale(3.0f);
+    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "YOU HAVE DIED!");
+    ImGui::SetWindowFontScale(2.0f);
+    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize("Exit?").x) * 0.5f);
+    if (ImGui::Button("Exit?")) {
+        exit(0);
+    }
+    ImGui::End();
+}
 void BattleOverlay::healthBars(Monster* monster, PlayerCharacter& p1) {
     
     string playerName = p1.getName();
@@ -39,7 +49,6 @@ void BattleOverlay::healthBars(Monster* monster, PlayerCharacter& p1) {
     int playerMaxHp = p1.getMaxHp();
     int monsterHp = monster->getHp();
     int monsterMaxHp = monster->getMaxHp();
-
     ImGui::Text("%s vs %s", playerName.c_str(), monsterName.c_str());
     ImGui::Separator();
     ImGui::Text("%s", playerName.c_str());
@@ -62,7 +71,7 @@ void BattleOverlay::healthBars(Monster* monster, PlayerCharacter& p1) {
 void BattleOverlay::playerTurn(Monster* monster, PlayerCharacter& p1, bool turn) {
     
     static int attackSuccess = 0; // 0 is waiting, 1 is fail, 2 is success
-    static int defendSuccess = 0;
+    static int defendSuccess = 0; // 0 is waiting, 1 is fail, 2 is success
     static bool changed = false;
     static bool attackButtonPressed = false;
     static bool defendButtonPressed = false;
@@ -78,16 +87,22 @@ void BattleOverlay::playerTurn(Monster* monster, PlayerCharacter& p1, bool turn)
             } 
         }
         ImGui::SameLine();
-        if (!defendButtonPressed && !attackButtonPressed && ImGui::Button("Defend")) {
-            defendButtonPressed = true;
-            if (p1.action()) {
-                defendSuccess = 2;
+        if (!defendButtonPressed && !attackButtonPressed) { // Only display defend button is not on full hp.
+            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !(p1.getHp() < p1.getMaxHp())); // Disable button from allowing character creation
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, p1.getHp() < p1.getMaxHp() ? 1.0f : 0.5f); // Change opacity alpha to 0.5f if conditions aren't met
+            if (ImGui::Button("Defend")) {
+                defendButtonPressed = true;
+                if (p1.action()) {
+                    defendSuccess = 2;
+                }
+                else {
+                    defendSuccess = 1;
+                }
             }
-            else {
-                defendSuccess = 1;
-            }
+            ImGui::PopItemFlag();
+            ImGui::PopStyleVar();
         }
-        if (attackButtonPressed || defendButtonPressed && p1.getHp() > 0) {
+        if ((attackButtonPressed || defendButtonPressed) && p1.getHp() > 0 && monster->getHp() > 0) {
             ImGui::SameLine();
             if (ImGui::Button("End Turn")) {
                 // Reset
@@ -102,90 +117,98 @@ void BattleOverlay::playerTurn(Monster* monster, PlayerCharacter& p1, bool turn)
         }  
     }
     if (attackSuccess == 2) { // Success
-            ImGui::Text("\n%s%s", p1.getName().c_str(), p1.getAttackText().c_str());
+            ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "\n%s%s", p1.getName().c_str(), p1.getAttackText().c_str());
             if (!changed) {
                 monster->setHp(monster->getHp() - p1.getAttack());
                 changed = true;
             }
     }
     else if (attackSuccess == 1) { // Fail
-        ImGui::Text("\n%s swings and misses the %s", p1.getName().c_str(), monster->getName().c_str());
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "\n%s swings and misses the %s", p1.getName().c_str(), monster->getName().c_str());
     }
     else if (defendSuccess == 2) { // Success
-        ImGui::Text("\n%s%s", p1.getName().c_str(), p1.getDefendText().c_str());
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "\n%s%s", p1.getName().c_str(), p1.getDefendText().c_str());
         if (p1.getHp() != p1.getMaxHp() && !changed) {
             p1.setHp(p1.getHp() + 1); // Make change to hp
             changed = true;
         }
     }
     else if (defendSuccess == 1) { // Fail
-        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "\n%s tries to take a defensive stance but trips and breaks their stance", p1.getName().c_str());
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "\n%s tries to take a defensive stance but trips and breaks their stance", p1.getName().c_str());
     }  
 }
 
 void BattleOverlay::monsterTurn(Monster* monster, PlayerCharacter& p1, bool turn) {
     static int monsterAttackSuccess = 0; // 0 is waiting, 1 is fail, 2 is success
-    static int monsterDefendSuccess = 0;
+    static int monsterDefendSuccess = 0; // 0 is waiting, 1 is fail, 2 is success
+    static bool decider;
     static bool actionUsed = false;
     srand(time(NULL));
-    static int decider = (rand() % 1000) % 2;
     static bool monsterChanged = false;
-    if (!turn) {
-        bool action = monster->action();
-        if (decider == 0) {
+    if (!turn && !actionUsed) {
+        decider = monster->action();
+        
+        if (decider && monsterAttackSuccess == 0) {
             
-            if (action) {
+            if (monster->action()) {
                 monsterAttackSuccess = 2;
+                
             }
-            else if(!action){
+            else if(!monster->action()){
                 monsterAttackSuccess = 1;
             }
+            actionUsed = true;
         }
-        if (decider == 1) {
-            if (action) {
+        else if (!decider && monsterDefendSuccess == 0) {
+            if (monster->action()) {
                 monsterDefendSuccess = 2;
             }
-            else if (!action){
+            else if (!monster->action()){
                 monsterDefendSuccess = 1;
             }
+            actionUsed = true;
         }
-        if (monsterAttackSuccess > 0 || monsterDefendSuccess > 0) {
-            ImGui::SameLine();
-            if (ImGui::Button("End Turn")) {
-                // Reset
-                monsterChanged = false;
-                monsterAttackSuccess = 0;
-                monsterDefendSuccess = 0;
-                actionUsed = false;
+        
+    }
+    if (actionUsed && monster->getHp() > 0 && p1.getHp() > 0) {
+        ImGui::SameLine();
+        if (ImGui::Button("End Turn")) {
+            // Reset
+            monsterChanged = false;
+            monsterAttackSuccess = 0;
+            monsterDefendSuccess = 0;
+            actionUsed = false;
 
-                // Next turn
-                turnOrder++;
-            }
+            // Next turn
+            turnOrder++;
         }
     }
-    if (monsterAttackSuccess == 2 && !actionUsed) { // Success
+    if (monsterAttackSuccess == 2) { // Success
         ImGui::Text("\n%s", monster->getAttackText().c_str());
         if (!monsterChanged) {
             p1.setHp(p1.getHp() - monster->getAttack()); // Make change to hp
             monsterChanged = true;
-            actionUsed = true;
+
         }
     }
-    else if (monsterAttackSuccess == 1 && !actionUsed) { // Fail
+    else if (monsterAttackSuccess == 1) { // Fail
         ImGui::Text("\n%s strikes and misses.", monster->getName().c_str());
-        actionUsed = true;
+
     }
-    else if (monsterDefendSuccess == 2 && !actionUsed) { // Success
-        ImGui::Text("\n%s", monster->getDefendText().c_str());
+    else if (monsterDefendSuccess == 2) { // Success
+        
         if (!monsterChanged && monster->getHp() != monster->getMaxHp()) {
             monster->setHp(monster->getHp() + 1);
+            ImGui::Text("\n%s", monster->getDefendText().c_str());
             monsterChanged = true;
-            actionUsed = true;
+        }
+        else {
+            ImGui::Text("\n%s tries to recover but is already on full hp.",monster->getName());
         }
     }
-    else if (monsterDefendSuccess == 1 && !actionUsed) { // Fail
+    else if (monsterDefendSuccess == 1) { // Fail
         ImGui::Text("\n%s tries to stay back and recover but slips and is off balance.", monster->getName().c_str());
-        actionUsed = true;
+
     }
 }
 
@@ -208,6 +231,8 @@ bool BattleOverlay::render(Monster* monster, Room* currentRoom, PlayerCharacter&
 
     healthBars(monster, p1); // render health bars
     imageHelper(monsterName, g_pd3dDevice);
+    ImGui::NewLine();
+    ImGui::NewLine();
     playerTurn(monster, p1, turn); // Handle player turns
     monsterTurn(monster, p1, turn); // Handle monster turns
 
@@ -249,6 +274,7 @@ bool MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g
     ImGui::Text("Current Room: %d", currentRoomIndex + 1);
 
         if (typeid(*currentRoom) == typeid(MonsterRoom) && dynamic_cast<MonsterRoom*>(currentRoom)->getMonster()->getHp() > 0){ // Check if current room is a monster room
+            encounter = true;
             MonsterRoom* monsterRoom = dynamic_cast<MonsterRoom*>(currentRoom); // Re-instantiate current room as a monster room for local use
             if (monsterRoom->getMonster()->getHp() > 0){
                 ImGui::Text("%s", monsterRoom->describe().c_str()); // Describe whats in the monster room
@@ -264,6 +290,12 @@ bool MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g
         }
         if (typeid(*currentRoom) == typeid(EmptyRoom) || !encounter ){ // Check if current room is an empty room
             // Display connected rooms
+            if (typeid(*currentRoom) == typeid(TreasureRoom)) {
+                ImGui::Text("Congratulations you reached the treasure!");
+                imageHelper("TreasureRoom", g_pd3dDevice);
+                ImGui::End();
+                return false;
+            }
             ImGui::Text("%s", currentRoom->describe().c_str()); // Describe current room (not monster room)
             ImGui::Text("Connected Rooms (click to travel):");
             vector<Room*> connectedRooms = dungeon.getRooms()[currentRoomIndex]->getConnectedRooms();
@@ -284,12 +316,11 @@ bool MapOverlay::render(Dungeon& dungeon, int& currentRoomIndex, ID3D11Device* g
                 if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                     ImGui::SetTooltip("Heal to full hp. Current hp: %d/%d", p1.getHp(), p1.getMaxHp());
             }
-
-
             ImGui::End();
             return false;
         
         }
+        
     
     ImGui::End();
     return false;

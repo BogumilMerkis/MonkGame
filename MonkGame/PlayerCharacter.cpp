@@ -10,7 +10,7 @@ PlayerCharacter::PlayerCharacter(const string& playerName, unique_ptr<CharacterC
 {
 }
 
-PlayerCharacter::PlayerCharacter()
+PlayerCharacter::PlayerCharacter() : Entity("", 1, 0)
 {
 }
 
