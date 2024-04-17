@@ -336,7 +336,10 @@ bool CharacterCreationOverlay::render(bool showCharacterCreationWindow, ID3D11De
         Barbarian barb =  Barbarian();
 
         ImGui::Begin("Character Creation", &showCharacterCreationWindow, window_flags);
-
+        ImGui::Text("Welcome to MonkGame!");
+        ImGui::Spacing();
+        ImGui::Spacing();
+        ImGui::Spacing();
         // Class selection
         ImGui::Text("Select Class:");
         ImGui::RadioButton("Monk", &selectedClass, 1);

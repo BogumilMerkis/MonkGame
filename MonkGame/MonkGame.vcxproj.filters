@@ -132,6 +132,7 @@
     <None Include="packages.config" />
     <None Include="vcpkg.json" />
     <None Include="vcpkg-configuration.json" />
+    <None Include="ClassDiagram3.cd" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\images\Goblin.png">

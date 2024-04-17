@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CharacterClass">
+    <Position X="14.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAGAABAAAEAQAAAAIAAAAAAAAAAkAACAAUBAAEAAAAA=</HashCode>
+      <FileName>CharacterClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Monk">
+    <Position X="13.25" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAGAAAAAIAAQAAAAAAAACAAAAAAgAAAAAUAAAAAAABA=</HashCode>
+      <FileName>CharacterClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Barbarian">
+    <Position X="15.5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAGAAAEAAAAQAAAAAAACCAAAAAAgAAAAAUAAAAAAAAA=</HashCode>
+      <FileName>CharacterClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Dungeon">
+    <Position X="6.75" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAASAAAgIAAAAIAAAAAAAEAAAAAQAABAAAAAAA=</HashCode>
+      <FileName>Dungeon.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Entity">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAgBBAAAAAAQAACIAAAAAAAACAEAACEEABEAAAAAAA=</HashCode>
+      <FileName>Entity.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Monster">
+    <Position X="6.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAQAAAACAAAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>Monster.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Goblin">
+    <Position X="2.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAGAAAAAAAAQAAAAAAAACAAAAAAIAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Monster.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Zombie">
+    <Position X="5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAGAAAAAEAAQAAAAAAAACAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Monster.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Skeleton">
+    <Position X="7.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEGAAAAAAAAQAAAAACAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Monster.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GiantSpider">
+    <Position X="9.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAGAAAAAAAAQAEAAAAAACQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Monster.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Factory">
+    <Position X="12.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Monster.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GoblinFactory">
+    <Position X="11.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Monster.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ZombieFactory">
+    <Position X="14" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Monster.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkeletonFactory">
+    <Position X="16.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Monster.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GiantSpiderFactory">
+    <Position X="9.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Monster.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Overlay">
+    <Position X="10.75" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAUAAA=</HashCode>
+      <FileName>Overlay.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BattleOverlay">
+    <Position X="8.5" Y="14.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAgAAAIAAIIgAAAAAAQAAA=</HashCode>
+      <FileName>Overlay.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MapOverlay">
+    <Position X="10.75" Y="14.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>Overlay.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CharacterCreationOverlay">
+    <Position X="13" Y="14.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAIAAAAQAAIAAAAAAEAAAAAAACAAAEAAQAAAAAQCQA=</HashCode>
+      <FileName>Overlay.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlayerCharacter">
+    <Position X="0.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EACAAAAAAAAUAIIAIAMAAAAAAAAkAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PlayerCharacter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Room">
+    <Position X="2.75" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACACCEAAAAgABAAAgCAAAAAAGAAAAAAAAAAAAA=</HashCode>
+      <FileName>Room.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EmptyRoom">
+    <Position X="0.5" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAACAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>Room.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterRoom">
+    <Position X="2.75" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAACAIAAAAAAAAAAAAACCAAAAAAAAIAAAA=</HashCode>
+      <FileName>Room.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TreasureRoom">
+    <Position X="5" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAgAAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>Room.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -41,7 +41,6 @@ public:
 	Monster* getMonster() const;
 	string describe() const override;
 	void interact(Dungeon& dungeon) override;
-	void setDescription(string descrpition);
 };
 
 class TreasureRoom : public Room {
