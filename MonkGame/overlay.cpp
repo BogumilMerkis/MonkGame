@@ -12,25 +12,40 @@ using namespace std;
 
 static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
-bool Overlay::imageHelper(string fileName, ID3D11Device* g_pd3dDevice) // Universal Helper
+bool Overlay::imageHelper(string fileName, ID3D11Device* g_pd3dDevice)
 {
-    string path = filepath;
+    string path = filepath + fileName + ".png";
     int my_image_width = 0;
     int my_image_height = 0;
     ID3D11ShaderResourceView* my_texture = NULL;
-    path += fileName + ".png";
+
     bool ret = LoadTextureFromFile(g_pd3dDevice, path.c_str(), &my_texture, &my_image_width, &my_image_height);
     IM_ASSERT(ret);
+
     float aspect_ratio = float(my_image_width) / float(my_image_height);
     int new_width = int(400 * aspect_ratio);
     int new_height = int(500 * aspect_ratio);
+
+    // Do NOT release the texture immediately
     ImGui::Image((void*)my_texture, ImVec2(new_height, new_width));
-    
-    my_texture->Release();
+
+    // You must store `my_texture` somewhere and release it later when it's no longer needed.
+    textureCache.push_back(my_texture); // or any other way to manage it
 
     return true;
 }
+
+void Overlay::clearTextures()
+{
+    for (auto* tex : textureCache)
+    {
+        if (tex) tex->Release();
+    }
+    textureCache.clear();
+}
+
 void BattleOverlay::dead() {
+    clearTextures();
     ImGui::Begin("Death", 0, window_flags);
     ImGui::SetWindowFontScale(3.0f);
     ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "YOU HAVE DIED!");

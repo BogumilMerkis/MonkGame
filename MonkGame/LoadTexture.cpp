@@ -31,7 +31,13 @@ bool LoadTextureFromFile(ID3D11Device* g_pd3dDevice, const char* path, ID3D11Sha
     subResource.pSysMem = image_data;
     subResource.SysMemPitch = desc.Width * 4;
     subResource.SysMemSlicePitch = 0;
-    g_pd3dDevice->CreateTexture2D(&desc, &subResource, &pTexture);
+    HRESULT hr = g_pd3dDevice->CreateTexture2D(&desc, &subResource, &pTexture);
+	// Prvent pTexture from passing to CreateShaderResourceView if it is NULL
+    if (FAILED(hr) || pTexture == NULL)
+    {
+        stbi_image_free(image_data);
+        return false;
+    }
 
     // Create texture view
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;

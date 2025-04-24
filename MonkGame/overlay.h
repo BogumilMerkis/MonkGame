@@ -11,10 +11,12 @@ using namespace std;
 	class Overlay{
 	private:
 		const string filepath = "./src/images/"; // used for images in the imgui overlays
+		std::vector<ID3D11ShaderResourceView*> textureCache;
 	public:
 		void pop();
 		virtual void render();
 		bool imageHelper(string fileName, ID3D11Device* g_pd3dDevice);
+		void clearTextures();
 
 		
 	};
